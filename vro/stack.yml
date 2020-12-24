@@ -1,11 +1,11 @@
 provider:
   name: openfaas
-  gateway: https://veba.primp-industries.com
+  gateway: https://phxlvveba01.itplab.local
 functions:
   powershell-vro:
     lang: powercli
     handler: ./handler
-    image: vmware/veba-powershell-vro:latest
+    image: cmstraka/nsxt-tag-sync
     environment:
       write_debug: true
       read_debug: true
@@ -14,4 +14,4 @@ functions:
     secrets:
       - vro-secrets
     annotations:
-      topic: DrsVmPoweredOnEvent,VmPoweredOnEvent
+      topic: cis.tagging.detach,cis.tagging.attach
