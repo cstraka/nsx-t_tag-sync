@@ -35,30 +35,12 @@ $body = @"
             "type": "VC:VirtualMachine",
             "name": "vm",
             "scope": "local"
-        },
-        {
-            "value": {
-                "string":{
-                    "value": "$($SECRETS_CONFIG.TAG_CATEGORY_NAME)"
-                }
-            },
-            "type": "string",
-            "name": "categoryName",
-            "scope": "local"
-        },
-        {
-            "value": {
-                "string":{
-                    "value": "$($SECRETS_CONFIG.TAG_NAME)"
-                }
-            },
-            "type": "string",
-            "name": "tagToFind",
-            "scope": "local"
         }
-	]
-}
 "@
+
+Set-PowerCLIConfiguration -InvalidCertificateAction Ignore  -DisplayDeprecationWarnings $false -ParticipateInCeip $false -Confirm:$false | Out-Null
+
+
 
 # Basic Auth for vRO execution
 $pair = "$($SECRETS_CONFIG.VRO_USERNAME):$($SECRETS_CONFIG.VRO_PASSWORD)"
