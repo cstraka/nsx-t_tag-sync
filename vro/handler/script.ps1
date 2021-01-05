@@ -1,3 +1,4 @@
+Set-PowerCLIConfiguration -InvalidCertificateAction Ignore  -DisplayDeprecationWarnings $false -ParticipateInCeip $false -Confirm:$false | Out-Null
 
 # Process function Secrets passed in
 $SECRETS_FILE = "/var/openfaas/secrets/vro-secrets"
@@ -21,26 +22,25 @@ if($vmMoRef -eq "" -or $vm -eq "") {
 # e.g. mgmt-vcsa-01.cpbu.corp/vm-2660
 $vroVmId = "$vcenter/$vmMoRef"
 
-# assumes following vRO Workflow https://github.com/kclinden/vro-vsphere-tagging as an example
-$body = @"
+$tagList = New-Object System.Collections.ArrayList
+$tags = Get-VM -name $vm -server $viServer | Get-TagAssignment
+$vmID = Get-VM -name $vm -server $viServer
+foreach ($tag in $tags)
 {
-    "parameters":
-	[
-        {
-            "value": {
-                "sdk-object":{
-                    "type": "VC:VirtualMachine",
-                    "id": "$($vroVmId)"}
-                },
-            "type": "VC:VirtualMachine",
-            "name": "vm",
-            "scope": "local"
-        }
-"@
+    $tagString = $tag.tag.ToString()
+    $tagArray = $tagString.split('/')
+    $tagList.add(@{"category"=$tagArray[0];"value"=$tagArray[1]})
+}
+$vmList.add(@{"viServer"=$viServer;"name"=$vm;"vmPersisitentID"=$vmID.PersistentID;"vmID"=$vmID.Id;"tags"=$tagList;})
+$json.add("data",$vmList)
 
-Set-PowerCLIConfiguration -InvalidCertificateAction Ignore  -DisplayDeprecationWarnings $false -ParticipateInCeip $false -Confirm:$false | Out-Null
-
-
+$json | ConvertTo-Json -depth 10 | Out-File "d:\virtualmachines.json"
+$jsonBody = $json | ConvertTo-Json -depth 10
+#write-host $jsonBody
+$body = $jsonBody | ConvertFrom-Json
+#Write-Host $body
+#Write-Host "Disconnecting from vCenter Server ..."
+Disconnect-VIServer * -Confirm:$false
 
 # Basic Auth for vRO execution
 $pair = "$($SECRETS_CONFIG.VRO_USERNAME):$($SECRETS_CONFIG.VRO_PASSWORD)"
@@ -58,8 +58,6 @@ $vroUrl = "https://$($SECRETS_CONFIG.VRO_SERVER):443/vco/api/workflows/$($SECRET
 
 if($env:function_debug -eq "true") {
     Write-Host "DEBUG: vRoVmID=$vroVmId"
-    Write-Host "DEBUG: TagCategory=$($SECRETS_CONFIG.TAG_CATEGORY_NAME)"
-    Write-Host "DEBUG: TagName=$($SECRETS_CONFIG.TAG_NAME)"
     Write-Host "DEBUG: vRoURL=`"$($vroUrl | Format-List | Out-String)`""
     Write-Host "DEBUG: headers=`"$($headers | Format-List | Out-String)`""
     Write-Host "DEBUG: body=$body"
