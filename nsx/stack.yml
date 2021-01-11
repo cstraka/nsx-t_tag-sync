@@ -1,0 +1,15 @@
+provider:
+  name: openfaas
+  gateway: https://phxlvveba01.itplab.local
+functions:
+  nsxttagsync:
+    lang: powercli
+    handler: ./handler
+    image: cmstraka/nsxt-tag-sync
+    environment:
+      skip_nsx_cert_check: true
+      prod_environment: true
+    secrets:
+      - nsx-secrets
+    annotations:
+      topic: com.vmware.cis.tagging.detach,com.vmware.cis.tagging.attach

@@ -1,0 +1,2 @@
+language: powercli
+fprocess: xargs pwsh ./function/NSXTest-20210111.ps1
