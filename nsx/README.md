@@ -24,7 +24,7 @@ Step 2 - Update `stack.yml` and `vro-secrets.json` with your environment informa
 Step 3 - Deploy function to VMware Event Broker Appliance
 
 ```
-VEBA_GATEWAY=https://veba.primp-industries.com
+VEBA_GATEWAY=https://phxlvveba01.itplab.local
 export OPENFAAS_URL=${VEBA_GATEWAY} # this is handy so you don't have to keep specifying OpenFaaS endpoint in command-line
 
 faas-cli login --username admin --password-stdin --tls-no-verify # login with your admin password
@@ -57,3 +57,22 @@ Step 2 - Push the function container to Docker Registry (default but can be chan
 ```
 faas-cli push -f stack.yml
 ```
+
+
+
+in ITP Lab
+[root@phxlvdocker01 nsx]# export OPENFAAS_URL=https://phxlvveba01.itplab.local
+[root@phxlvdocker01 nsx]# cat ~/faas_pass.txt | faas-cli login -u admin --password-stdin --tls-no-verify
+Calling the OpenFaaS server to validate the credentials...
+credentials saved for admin https://phxlvveba01.itplab.local
+[root@phxlvdocker01 nsx]# faas-cli secret create nsx-secrets --from-file=nsx-secrets.json --tls-no-verify
+Creating secret: nsx-secrets
+Created: 202 Accepted
+[root@phxlvdocker01 nsx]# faas-cli deploy --tls-no-verify -f stack.yml
+Deploying: nsxttagsync.
+
+Deployed. 202 Accepted.
+URL: https://phxlvveba01.itplab.local/function/nsxttagsync.openfaas-fn
+
+[root@phxlvdocker01 nsx]#
+
