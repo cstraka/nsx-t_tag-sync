@@ -19,9 +19,9 @@ if($env:prod_environment -ne "true") {
     Write-Host "DEBUG: json=`"$($json | Format-List | Out-String)`""
 }
 
-$vcenter = ($json.source -replace "https://","" -replace "/sdk","");
-$vmMoRef = $json.data.vm.vm.value;
-$vm = $json.data.vm.name;
+$vcenter = ($json.source -replace "https://","" -replace "/sdk","")
+$vmMoRef = $json.data.vm.vm.value
+$vm = $json.data.vm.name
 
 #Assigning credentials securely
 #$credentials = $host.ui.PromptForCredential("Input Your Virtual Center credentials", "Please enter your vCenter user name and password.", "", "NetBiosUserName")
@@ -38,8 +38,7 @@ if($vmMoRef -eq "" -or $vm -eq "") {
     exit
 }
 
-# e.g. mgmt-vcsa-01.cpbu.corp/vm-2660
-$nsxVmId = "$vcenter/$vmMoRef"
+
 
 $jsonTags = @{}
 $nsxTags = @{}
@@ -90,6 +89,7 @@ $headers = @{
 $nsxUrl = "https://$($SECRETS_CONFIG.NSX_SERVER)/api/v1/fabric/virtual-machines?action=update_tags"
 
 if($env:prod_environment -eq "true") {
+    Write-Host "DEBUG: body=`"$($nsxAuthURL | Format-List | Out-String)`""
     Write-Host "DEBUG: body=`"$($body | Format-List | Out-String)`""
     Write-Host "DEBUG: nsxURL=`"$($nsxUrl | Format-List | Out-String)`""
     Write-Host "DEBUG: headers=`"$($headers | Format-List | Out-String)`""
