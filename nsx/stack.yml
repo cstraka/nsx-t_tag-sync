@@ -8,8 +8,7 @@ functions:
     image: vmware/veba-powershell-vro:latest
     environment:
       skip_nsx_cert_check: true
-      function_debug: true
-      prod_environment: true
+      prod_environment: false
     secrets:
       - nsx-secrets
     annotations:
