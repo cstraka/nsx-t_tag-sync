@@ -1,0 +1,15 @@
+provider:
+  name: openfaas
+  gateway: https://phxlvveba01.itplab.local
+functions:
+  testfunction:
+    lang: powercli
+    handler: ./handler
+    image: vmware/veba-powershell-vro:latest
+    environment:
+      skip_nsx_cert_check: true
+      prod_environment: true
+    secrets:
+      - nsx-secrets
+    annotations:
+      topic: com.vmware.cis.tagging.attach
