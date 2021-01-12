@@ -15,9 +15,8 @@ if($env:prod_environment -ne "true") {
 $SECRETS_CONFIG = (Get-Content -Raw -Path $SECRETS_FILE | ConvertFrom-Json)
 # Process payload sent from vCenter Server Event
 
-if($env:prod_environment -ne "true") {
-    Write-Host "DEBUG: json=`"$($json | Format-List | Out-String)`""
-}
+Write-Host "DEBUG: json=`"$($json | Format-List | Out-String)`""
+
 
 $vcenter = ($json.source -replace "https://","" -replace "/sdk","")
 $vmMoRef = $json.data.vm.vm.value
