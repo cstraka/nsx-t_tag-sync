@@ -1,24 +1,30 @@
 Set-PowerCLIConfiguration -InvalidCertificateAction Ignore  -DisplayDeprecationWarnings $false -ParticipateInCeip $false -Confirm:$false | Out-Null
 
+# Process function Secrets passed in
+
 #production inputs
-if($env:prod_environment -eq "true") {
-    $SECRETS_FILE = "/var/openfaas/secrets/nsx-secrets"
-} else {
+$SECRETS_FILE = "/var/openfaas/secrets/nsx-secrets"
+$json = $args | ConvertFrom-Json
+
+if($env:prod_environment -ne "true") {
     $SECRETS_FILE = "D:\OneDrive\GitHub\NSX-T_Tag-Sync\nsx\nsx-secrets.json"
+    $ARGS_FILE = "D:\OneDrive\GitHub\NSX-T_Tag-Sync\nsx\args.json"
+    $json = (Get-Content -Raw -Path $ARGS_FILE | ConvertFrom-Json)
 }
 
-$SECRETS_CONFIG = Get-Content -Raw -Path $SECRETS_FILE | ConvertFrom-Json
-
+$SECRETS_CONFIG = (Get-Content -Raw -Path $SECRETS_FILE | ConvertFrom-Json)
 # Process payload sent from vCenter Server Event
-$json = $args | ConvertFrom-Json
-if($env:function_debug -eq "true") {
+
+if($env:prod_environment -ne "true") {
     Write-Host "DEBUG: json=`"$($json | Format-List | Out-String)`""
 }
 
-$vcenter = $SECRETS_CONFIG.vCenter_SERVER
+$vcenter = ($json.source -replace "https://","" -replace "/sdk","");
 $vmMoRef = $json.data.vm.vm.value;
 $vm = $json.data.vm.name;
 
+#Assigning credentials securely
+#$credentials = $host.ui.PromptForCredential("Input Your Virtual Center credentials", "Please enter your vCenter user name and password.", "", "NetBiosUserName")
 #Assigning credentials securely
 $userName = $SECRETS_CONFIG.vCenter_USERNAME
 $password = convertto-securestring $SECRETS_CONFIG.vCenter_PASSWORD -AsPlainText -Force
@@ -92,7 +98,7 @@ if($env:prod_environment -eq "true") {
 }
 
 if($env:skip_nsx_cert_check -ne "true") {
-    Invoke-Webrequest -Uri $nsxUrl -Method POST -Headers $headers -SkipHeaderValidation -Body $nsxbody
-} else {
     Invoke-Webrequest -Uri $nsxUrl -Method POST -Headers $headers -SkipHeaderValidation -Body $nsxbody -SkipCertificateCheck
+} else {
+    Invoke-Webrequest -Uri $nsxUrl -Method POST -Headers $headers -SkipHeaderValidation -Body $nsxbody
 }
