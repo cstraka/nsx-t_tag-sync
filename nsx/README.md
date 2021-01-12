@@ -107,7 +107,7 @@ projectcontour   envoy-hjh6r                                        2/2     Runn
 vmware           tinywww-65dd5c4d6f-ztspj                           1/1     Running            1          18d
 vmware           vmware-event-router-6976868859-4ml2v               1/1     Running            5          18d
 
-kubectl logs vmware-event-router-6976868859-4ml2v -n vmware | grep tagging
+kubectl logs vmware-event-router-6976868859-4ml2v -n vmware | grep com.vmware.cis
 
 Examine Logs
 
