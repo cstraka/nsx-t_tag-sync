@@ -5,7 +5,7 @@ functions:
   testfunction:
     lang: powercli
     handler: ./handler
-    image: vmware/veba-powershell-vro:latest
+    image: vmware/veba-powercli-tagging:latest
     environment:
       skip_nsx_cert_check: true
       prod_environment: true
