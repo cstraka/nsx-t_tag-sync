@@ -6,11 +6,12 @@ Set-PowerCLIConfiguration -InvalidCertificateAction Ignore  -DisplayDeprecationW
 $SECRETS_FILE = "/var/openfaas/secrets/nsx-secrets"
 $json = $args | ConvertFrom-Json
 
-if($env:development_environment -eq "true") {
+
+#if($env:development_environment -eq "true") {
     $SECRETS_FILE = "D:\OneDrive\GitHub\NSX-T_Tag-Sync\nsx\nsx-secrets.json"
     $ARGS_FILE = "D:\OneDrive\GitHub\NSX-T_Tag-Sync\nsx\args.json"
     $json = (Get-Content -Raw -Path $ARGS_FILE | ConvertFrom-Json)
-}
+#}
 
 $SECRETS_CONFIG = (Get-Content -Raw -Path $SECRETS_FILE | ConvertFrom-Json)
 
@@ -21,8 +22,6 @@ $vcenter = ($json.source -replace "https://","" -replace "/sdk","")
 $vmMoRef = $json.data.vm.vm.value
 $vm = $json.data.vm.name
 
-#Assigning credentials securely
-#$credentials = $host.ui.PromptForCredential("Input Your Virtual Center credentials", "Please enter your vCenter user name and password.", "", "NetBiosUserName")
 #Assigning credentials securely
 $userName = $SECRETS_CONFIG.vCenter_USERNAME
 $password = convertto-securestring $SECRETS_CONFIG.vCenter_PASSWORD -AsPlainText -Force
@@ -91,7 +90,7 @@ $headers = @{
 
 $nsxUrl = "https://$($SECRETS_CONFIG.NSX_SERVER)/api/v1/fabric/virtual-machines?action=update_tags"
 
-if($env:prod_environment -ne "true") {
+if($env:debug_writehost -eq "true") {
     Write-Host "DEBUG: body=`"$($nsxAuthURL | Format-List | Out-String)`""
     Write-Host "DEBUG: body=`"$($body | Format-List | Out-String)`""
     Write-Host "DEBUG: nsxURL=`"$($nsxUrl | Format-List | Out-String)`""
@@ -100,7 +99,7 @@ if($env:prod_environment -ne "true") {
     Write-Host "DEBUG: Applying vSphere Tags for $vm to NSX-T"
 }
 
-if($env:skip_nsx_cert_check -eq "true") {
+if($env:skip_nsx_cert_check = "true") {
     Invoke-Webrequest -Uri $nsxUrl -Method POST -Headers $headers -SkipHeaderValidation -Body $nsxbody -SkipCertificateCheck
 } else {
     Invoke-Webrequest -Uri $nsxUrl -Method POST -Headers $headers -SkipHeaderValidation -Body $nsxbody
