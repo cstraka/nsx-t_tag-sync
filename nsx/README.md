@@ -63,7 +63,7 @@ faas-cli push -f stack.yml
 In ITP Lab
 [root@phxlvdocker01~]cd NSX-T_Tag-Sync/
 [root@phxlvdocker01 NSX-T_Tag-Sync]# git pull https://github.com/cstraka/NSX-T_Tag-Sync.git
-[root@phxlvdocker01 NSX-T_Tag-Sync]# cd NSX
+[root@phxlvdocker01 NSX-T_Tag-Sync]# cd nsx
 [root@phxlvdocker01 nsx]# export OPENFAAS_URL=https://phxlvveba01.itplab.local
 [root@phxlvdocker01 nsx]# cat ~/faas_pass.txt | faas-cli login -u admin --password-stdin --tls-no-verify
 Calling the OpenFaaS server to validate the credentials...
