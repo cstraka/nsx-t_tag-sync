@@ -8,7 +8,8 @@ functions:
     image: cmstraka/nsxt-tag-sync:latest
     environment:
       skip_nsx_cert_check: true
-      prod_environment: true
+      development_environment: false
+      debug_writehost: true
     secrets:
       - nsx-secrets
     annotations:

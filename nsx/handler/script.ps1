@@ -6,7 +6,7 @@ Set-PowerCLIConfiguration -InvalidCertificateAction Ignore  -DisplayDeprecationW
 $SECRETS_FILE = "/var/openfaas/secrets/nsx-secrets"
 $json = $args | ConvertFrom-Json
 
-if($env:prod_environment -ne "true") {
+if($env:development_environment -eq "true") {
     $SECRETS_FILE = "D:\OneDrive\GitHub\NSX-T_Tag-Sync\nsx\nsx-secrets.json"
     $ARGS_FILE = "D:\OneDrive\GitHub\NSX-T_Tag-Sync\nsx\args.json"
     $json = (Get-Content -Raw -Path $ARGS_FILE | ConvertFrom-Json)
@@ -36,8 +36,6 @@ if($vmMoRef -eq "" -or $vm -eq "") {
     exit
 }
 
-
-
 $jsonTags = @{}
 $nsxTags = @{}
 
@@ -58,9 +56,12 @@ foreach ($tag in $tags)
 $vmList.add(@{"viServer"=$vcenter;"name"=$vm;"vmPersisitentID"=$vmID.PersistentID;"vmID"=$vmID.Id;"tags"=$tagList;})
 $jsonTags.add("data",$vmList)
 
-$jsonTags | ConvertTo-Json -depth 10 | Out-File "d:\virtualmachines.json"
+if($env:development_environment -eq "true") {
+    $jsonTags | ConvertTo-Json -depth 10 | Out-File "d:\virtualmachines.json"
+} else {
+    $jsonTags | ConvertTo-Json -depth 10
+}
 $body = $jsonTags | ConvertTo-Json -depth 10
-#write-host $jsonBody
 
 #Write-Host "Disconnecting from vCenter Server ..."
 Disconnect-VIServer * -Confirm:$false
@@ -68,7 +69,11 @@ Disconnect-VIServer * -Confirm:$false
 $nsxTags.add("external_id",$vmPersistentID)
 $nsxTags.add("tags",$nsxList)
 
-$nsxTags | ConvertTo-Json -depth 10 | Out-File "d:\NSX-virtualmachines.json"
+if($env:development_environment -eq "true") {
+    $nsxTags | ConvertTo-Json -depth 10 | Out-File "d:\NSX-virtualmachines.json"
+} else {
+    $nsxTags | ConvertTo-Json -depth 10
+}
 $nsxBody = $nsxTags | ConvertTo-Json -depth 10
 
 # Basic Auth for nsx execution
@@ -86,7 +91,7 @@ $headers = @{
 
 $nsxUrl = "https://$($SECRETS_CONFIG.NSX_SERVER)/api/v1/fabric/virtual-machines?action=update_tags"
 
-if($env:prod_environment -eq "true") {
+if($env:prod_environment -ne "true") {
     Write-Host "DEBUG: body=`"$($nsxAuthURL | Format-List | Out-String)`""
     Write-Host "DEBUG: body=`"$($body | Format-List | Out-String)`""
     Write-Host "DEBUG: nsxURL=`"$($nsxUrl | Format-List | Out-String)`""
@@ -95,7 +100,7 @@ if($env:prod_environment -eq "true") {
     Write-Host "DEBUG: Applying vSphere Tags for $vm to NSX-T"
 }
 
-if($env:skip_nsx_cert_check -ne "true") {
+if($env:skip_nsx_cert_check -eq "true") {
     Invoke-Webrequest -Uri $nsxUrl -Method POST -Headers $headers -SkipHeaderValidation -Body $nsxbody -SkipCertificateCheck
 } else {
     Invoke-Webrequest -Uri $nsxUrl -Method POST -Headers $headers -SkipHeaderValidation -Body $nsxbody
