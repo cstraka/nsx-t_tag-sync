@@ -5,19 +5,11 @@ Set-PowerCLIConfiguration -InvalidCertificateAction Ignore  -DisplayDeprecationW
 #production inputs
 $SECRETS_FILE = "/var/openfaas/secrets/nsx-secrets"
 $json = $args | ConvertFrom-Json
-
-
-#if($env:development_environment -eq "true") {
-    $SECRETS_FILE = "D:\OneDrive\GitHub\NSX-T_Tag-Sync\nsx\nsx-secrets.json"
-    $ARGS_FILE = "D:\OneDrive\GitHub\NSX-T_Tag-Sync\nsx\args.json"
-    $json = (Get-Content -Raw -Path $ARGS_FILE | ConvertFrom-Json)
-#}
+Write-Host "DEBUG: json=`"$($json | Format-List | Out-String)`""
 
 $SECRETS_CONFIG = (Get-Content -Raw -Path $SECRETS_FILE | ConvertFrom-Json)
 
 # Process payload sent from vCenter Server Event
-Write-Host "DEBUG: json=`"$($json | Format-List | Out-String)`""
-
 $vcenter = ($json.source -replace "https://","" -replace "/sdk","")
 $vmMoRef = $json.data.vm.vm.value
 $vm = $json.data.vm.name
