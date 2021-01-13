@@ -5,7 +5,7 @@ functions:
   nsxttagsync:
     lang: powercli
     handler: ./handler
-    image: vmware/veba-powercli-tagging:latest
+    image: vmware/veba-powercli-datastore-notification:latest
     environment:
       skip_nsx_cert_check: true
       prod_environment: true
