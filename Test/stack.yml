@@ -5,7 +5,7 @@ functions:
   testfunction:
     lang: powercli
     handler: ./handler
-    image: cmstraka/veba-testfunction
+    image: cmstraka/veba-base:latest
     environment:
       skip_nsx_cert_check: true
       prod_environment: false

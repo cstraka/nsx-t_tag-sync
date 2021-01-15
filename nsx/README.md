@@ -50,12 +50,14 @@ Step 1 - Build the function container
 
 ```
 faas-cli build -f stack.yml
+faas-cli deploy --tls-no-verify -f stack.yml
 ```
 
 Step 2 - Push the function container to Docker Registry (default but can be changed to internal registry)
 
 ```
 faas-cli push -f stack.yml
+faas-cli push --tls-no-verify -f stack.yml
 ```
 
 
@@ -117,36 +119,77 @@ Examine Logs
 2021-01-11T21:25:53.259Z        ERROR   [OPENFAAS]      openfaas/openfaas.go:249        could not invoke function       {"function": "nsxttagsync.openfaas-fn", "topic": "com.vmware.cis.tagging.attach", "retries": 3, "error": "All attempts fail:\n#1: function \"nsxttagsync.openfaas-fn\" on topic \"com.vmware.cis.tagging.attach\" returned non successful status code 500: \"\"\n#2: function \"nsxttagsync.openfaas-fn\" on topic \"com.vmware.cis.tagging.attach\" returned non successful status code 500: \"\"\n#3: function \"nsxttagsync.openfaas-fn\" on topic \"com.vmware.cis.tagging.attach\" returned non successful status code 500: \"\""}
 2021-01-11T21:25:53.259Z        INFO    [OPENFAAS]      openfaas/openfaas.go:197        finished processing of event    {"eventID": "742cc650-79e1-4d17-883d-7a070103e2fb", "topic": "com.vmware.cis.tagging.attach"}
 
-kubectl get pods -A
-NAMESPACE        NAME                                               READY   STATUS             RESTARTS   AGE
-kube-system      antrea-agent-dfr64                                 2/2     Running            2          18d
-kube-system      antrea-controller-647fc85df-pq5vj                  1/1     Running            2          18d
-kube-system      coredns-66bff467f8-d59ps                           1/1     Running            1          18d
-kube-system      coredns-66bff467f8-plvph                           1/1     Running            1          18d
-kube-system      etcd-phxlvveba01.itplab.local                      1/1     Running            1          18d
-kube-system      kube-apiserver-phxlvveba01.itplab.local            1/1     Running            1          18d
-kube-system      kube-controller-manager-phxlvveba01.itplab.local   1/1     Running            3          18d
-kube-system      kube-proxy-nv55l                                   1/1     Running            1          18d
-kube-system      kube-scheduler-phxlvveba01.itplab.local            1/1     Running            3          18d
-openfaas-fn      nodeinfo-555965ddfb-qt8cr                          1/1     Running            0          18d
-openfaas-fn      nsxttagsync-8475b555db-8pvzj                       0/1     ImagePullBackOff   0          51s
-openfaas         alertmanager-655465946c-4f576                      1/1     Running            1          18d
-openfaas         basic-auth-plugin-7d4956689b-fcswm                 1/1     Running            1          18d
-openfaas         faas-idler-b85f98fb7-d66pv                         1/1     Running            4          18d
-openfaas         gateway-854d5bf48-m7dss                            2/2     Running            3          18d
-openfaas         nats-5cd4dff7c8-knzxk                              1/1     Running            1          18d
-openfaas         prometheus-859f6bfbc4-xkzbr                        1/1     Running            1          18d
-openfaas         queue-worker-6cb888d49c-f8k5g                      1/1     Running            2          18d
-projectcontour   contour-98d599f9f-x8mfb                            1/1     Running            3          18d
-projectcontour   contour-98d599f9f-xpccw                            1/1     Running            1          18d
-projectcontour   contour-certgen-v1.9.0-dpbl2                       0/1     Completed          0          18d
-projectcontour   envoy-hjh6r                                        2/2     Running            2          18d
-vmware           tinywww-65dd5c4d6f-ztspj                           1/1     Running            1          18d
-vmware           vmware-event-router-6976868859-4ml2v               1/1     Running            5          18d
+root@phxlvveba01 [ ~ ]# kubectl get pod -A
+NAMESPACE        NAME                                               READY   STATUS      RESTARTS   AGE
+kube-system      antrea-agent-dfr64                                 2/2     Running     2          21d
+kube-system      antrea-controller-647fc85df-pq5vj                  1/1     Running     2          21d
+kube-system      coredns-66bff467f8-d59ps                           1/1     Running     1          21d
+kube-system      coredns-66bff467f8-plvph                           1/1     Running     1          21d
+kube-system      etcd-phxlvveba01.itplab.local                      1/1     Running     1          21d
+kube-system      kube-apiserver-phxlvveba01.itplab.local            1/1     Running     1          21d
+kube-system      kube-controller-manager-phxlvveba01.itplab.local   1/1     Running     3          21d
+kube-system      kube-proxy-nv55l                                   1/1     Running     1          21d
+kube-system      kube-scheduler-phxlvveba01.itplab.local            1/1     Running     3          21d
+openfaas-fn      nsxttagsync-6b4dbfd676-w6tcd                       1/1     Running     1          2d10h
+openfaas         alertmanager-655465946c-4f576                      1/1     Running     1          21d
+openfaas         basic-auth-plugin-7d4956689b-fcswm                 1/1     Running     1          21d
+openfaas         faas-idler-b85f98fb7-d66pv                         1/1     Running     4          21d
+openfaas         gateway-854d5bf48-m7dss                            2/2     Running     3          21d
+openfaas         nats-5cd4dff7c8-knzxk                              1/1     Running     1          21d
+openfaas         prometheus-859f6bfbc4-xkzbr                        1/1     Running     1          21d
+openfaas         queue-worker-6cb888d49c-f8k5g                      1/1     Running     2          21d
+projectcontour   contour-98d599f9f-x8mfb                            1/1     Running     3          21d
+projectcontour   contour-98d599f9f-xpccw                            1/1     Running     1          21d
+projectcontour   contour-certgen-v1.9.0-dpbl2                       0/1     Completed   0          21d
+projectcontour   envoy-hjh6r                                        2/2     Running     2          21d
+vmware           tinywww-65dd5c4d6f-ztspj                           1/1     Running     1          21d
+vmware           vmware-event-router-6976868859-4ml2v               1/1     Running     5          21d
 
+See Execution Logs
+root@phxlvveba01 [ ~ ]#  kubectl logs -n openfaas-fn      nsxttagsync-6b4dbfd676-w6tcd
+2021/01/13 06:09:45 Version: 0.9.14     SHA: a65df4795bc66147c41161c48bfd4c72f60c7434
+2021/01/13 06:09:45 Read/write timeout: 5s, 5s. Port: 8080
+2021/01/13 06:09:45 Writing lock-file to: /tmp/.lock
+2021/01/13 06:13:46 Forking fprocess.
+2021/01/13 06:13:51 Wrote 4235 Bytes - Duration: 4.387700 seconds
+2021/01/13 06:15:43 Forking fprocess.
+2021/01/13 06:15:47 Wrote 4235 Bytes - Duration: 4.145429 seconds
 
 Connect to Shell
 kubectl exec --stdin --tty -n openfaas-fn nsxttagsync-6b4dbfd676-w6tcd -- /bin/bash
+
+
+
+
+
+
+Docker Reference
+Pull a new image from repo
+docker pull centos
+
+See images (these are the base local images available to run a new running docker container)
+[cstraka@phxlvdocker01 usr]$ docker images
+REPOSITORY               TAG       IMAGE ID       CREATED         SIZE
+cmstraka/nsxt-tag-sync   latest    c3a0cb00c5c6   3 weeks ago     211MB
+cmstraka/centos          latest    eb131a473f67   3 weeks ago     211MB
+<none>                   <none>    aa80b7f6171c   3 weeks ago     211MB
+centos                   latest    300e315adb2f   5 weeks ago     209MB
+ubuntu                   latest    f643c72bc252   7 weeks ago     72.9MB
+hello-world              latest    bf756fb1ae65   12 months ago   13.3kB
+vmware/photon2           latest    6337aa168349   2 years ago     32.1MB
+
+kill existing container
+docker rm competent_elbakyan
+
+Run a new image from REPO
+docker run --name vebaTest -it centos:latest bash
+
+See  running containers
+[cstraka@phxlvdocker01 usr]$ docker ps -a
+CONTAINER ID   IMAGE           COMMAND   CREATED          STATUS                   PORTS     NAMES
+a57432e2fccb   centos:latest   "bash"    11 minutes ago   Up 11 minutes                      veba-test
+635eeb343ed1   centos:latest   "bash"    3 weeks ago      Exited (0) 10 days ago             nsxt-tag-sync
+[cstraka@phxlvdocker01 usr]$
 
 
 
