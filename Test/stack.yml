@@ -8,7 +8,7 @@ functions:
     image: cmstraka/veba-testfunction
     environment:
       skip_nsx_cert_check: true
-      prod_environment: true
+      prod_environment: false
     secrets:
       - nsx-secrets
     annotations:
