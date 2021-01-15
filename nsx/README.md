@@ -144,8 +144,9 @@ projectcontour   envoy-hjh6r                                        2/2     Runn
 vmware           tinywww-65dd5c4d6f-ztspj                           1/1     Running            1          18d
 vmware           vmware-event-router-6976868859-4ml2v               1/1     Running            5          18d
 
-kubectl logs -n openfaas-fn nsxttagsync-78f6c8ffb9-qt4qz
-Error from server (BadRequest): container "nsxttagsync" in pod "nsxttagsync-8475b555db-8pvzj" is waiting to start: trying and failing to pull image
+
+Connect to Shell
+kubectl exec --stdin --tty -n openfaas-fn nsxttagsync-6b4dbfd676-w6tcd -- /bin/bash
 
 
 
