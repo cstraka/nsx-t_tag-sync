@@ -164,6 +164,9 @@ kubectl exec --stdin --tty -n openfaas-fn nsxttagsync-6b4dbfd676-w6tcd -- /bin/b
 
 
 Docker Reference
+Build custom image:
+https://www.linuxtechi.com/build-docker-container-images-with-dockerfile/
+
 Pull a new image from repo
 docker pull centos
 
@@ -182,14 +185,27 @@ kill existing container
 docker rm competent_elbakyan
 
 Run a new image from REPO
-docker run --name vebaTest -it centos:latest bash
+docker run --name veba-testfunction -it centos:latest bash
 
 See  running containers
-[cstraka@phxlvdocker01 usr]$ docker ps -a
-CONTAINER ID   IMAGE           COMMAND   CREATED          STATUS                   PORTS     NAMES
-a57432e2fccb   centos:latest   "bash"    11 minutes ago   Up 11 minutes                      veba-test
-635eeb343ed1   centos:latest   "bash"    3 weeks ago      Exited (0) 10 days ago             nsxt-tag-sync
-[cstraka@phxlvdocker01 usr]$
+[cstraka@phxlvdocker01 ~]$ docker ps -a
+CONTAINER ID   IMAGE           COMMAND   CREATED         STATUS         PORTS     NAMES
+d5ff4b82e4a0   centos:latest   "bash"    4 minutes ago   Up 4 minutes             veba-testfunction
+
+Commit running container to a new image (effectively cloned centos:latest to cmstraka/veba-base:latest)  use ':%tag% if something other than ':latest' is desired.
+[cstraka@phxlvdocker01 ~]$ docker commit -m "Cloned CentOS image " -a "Craig Straka" d5ff4b82e4a0 cmstraka/veba-base
+sha256:f85575f236987b6d5e54f976778f6c88f97d0c7f5ee3aee7758dd7b5d5b81d89
+
+docker push cmstraka/veba-base:latest
+
+look on github.io, cmstraka/veba-base:latest is available for pull and use!
+[root@phxlvdocker01 Test]# docker run --name veba-testfunction -it cmstraka/veba-base:latest bash
+[root@321256888f3b /]# [root@phxlvdocker01 Test]# docker ps -a
+CONTAINER ID   IMAGE                           COMMAND   CREATED          STATUS         PORTS      NAMES
+321256888f3b   cmstraka/veba-base:latest       "bash"    10 seconds ago   Up 9 seconds              veba-testfunction
+b1a6870d478e   cmstraka/nsxt-tag-sync:latest   "bash"    2 hours ago      Up 2 hours     8080/tcp   veba-test
+
+
 
 
 
