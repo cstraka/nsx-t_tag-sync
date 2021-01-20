@@ -1,4 +1,4 @@
-#Set-PowerCLIConfiguration -InvalidCertificateAction Ignore  -DisplayDeprecationWarnings $false -ParticipateInCeip $false -Confirm:$false | Out-Null
+Set-PowerCLIConfiguration -InvalidCertificateAction Ignore  -DisplayDeprecationWarnings $false -ParticipateInCeip $false -Confirm:$false | Out-Null
 
 # Process function Secrets passed in
 
@@ -10,7 +10,7 @@ Write-Host "DEBUG: json=`"$($json | Format-List | Out-String)`""
 $SECRETS_CONFIG = (Get-Content -Raw -Path $SECRETS_FILE | ConvertFrom-Json)
 
 # Process payload sent from vCenter Server Event
-$vcenter = ($json.source -replace "https://","" -replace "/sdk","")
+$vcenter = $SECRETS_CONFIG.vCenter_SERVER
 $vmMoRef = $json.data.vm.vm.value
 $vm = $json.data.vm.name
 
