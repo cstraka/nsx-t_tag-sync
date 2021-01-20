@@ -41,6 +41,7 @@ export OPENFAAS_URL=${VEBA_GATEWAY} # this is handy so you don't have to keep sp
 faas-cli remove -f stack.yml --tls-no-verify
 faas-cli secret remove vro-secrets --tls-no-verify
 ```
+faas-cli secret list --tls-no-verify
 
 ## Instruction Building Function
 
@@ -205,6 +206,67 @@ CONTAINER ID   IMAGE                           COMMAND   CREATED          STATUS
 321256888f3b   cmstraka/veba-base:latest       "bash"    10 seconds ago   Up 9 seconds              veba-testfunction
 b1a6870d478e   cmstraka/nsxt-tag-sync:latest   "bash"    2 hours ago      Up 2 hours     8080/tcp   veba-test
 
+Packages for Working VRO script
+root [ ~ ]# tdnf list
+Refreshing metadata for: 'VMware Photon Linux 3.0 (x86_64)'
+Error: 404 when downloading https://dl.bintray.com/vmware/photon_release_3.0_x86_64/repodata/repomd.xml
+. Please check repo url.
+Error: Failed to synchronize cache for repo 'VMware Photon Linux 3.0 (x86_64)' from 'https://dl.bintray.com/vmware/photon_release_3.0_x86_64'
+Disabling Repo: 'VMware Photon Linux 3.0 (x86_64)'
+Refreshing metadata for: 'VMware Photon Extras 3.0 (x86_64)'
+Error: 404 when downloading https://dl.bintray.com/vmware/photon_extras_3.0_x86_64/repodata/repomd.xml
+. Please check repo url.
+Error: Failed to synchronize cache for repo 'VMware Photon Extras 3.0 (x86_64)' from 'https://dl.bintray.com/vmware/photon_extras_3.0_x86_64'
+Disabling Repo: 'VMware Photon Extras 3.0 (x86_64)'
+Refreshing metadata for: 'VMware Photon Linux 3.0 (x86_64) Updates'
+Error: 404 when downloading https://dl.bintray.com/vmware/photon_updates_3.0_x86_64/repodata/repomd.xml
+. Please check repo url.
+Error: Failed to synchronize cache for repo 'VMware Photon Linux 3.0 (x86_64) Updates' from 'https://dl.bintray.com/vmware/photon_updates_3.0_x86_64'
+Disabling Repo: 'VMware Photon Linux 3.0 (x86_64) Updates'
+Linux-PAM.x86_64                                                                                                1.3.0-1.ph3                                                               @System
+bash.x86_64                                                                                                     4.4.18-2.ph3                                                              @System
+bzip2-libs.x86_64                                                                                               1.0.8-1.ph3                                                               @System
+ca-certificates.x86_64                                                                                          20190521-1.ph3                                                            @System
+ca-certificates-pki.x86_64                                                                                      20190521-1.ph3                                                            @System
+cracklib.x86_64                                                                                                 2.9.6-8.ph3                                                               @System
+curl.x86_64                                                                                                     7.61.1-6.ph3                                                              @System
+curl-libs.x86_64                                                                                                7.61.1-6.ph3                                                              @System
+e2fsprogs-libs.x86_64                                                                                           1.45.5-1.ph3                                                              @System
+elfutils-libelf.x86_64                                                                                          0.176-1.ph3                                                               @System
+expat.x86_64                                                                                                    2.2.9-1.ph3                                                               @System
+expat-libs.x86_64                                                                                               2.2.9-1.ph3                                                               @System
+filesystem.x86_64                                                                                               1.1-4.ph3                                                                 @System
+glibc.x86_64                                                                                                    2.28-4.ph3                                                                @System
+icu.x86_64                                                                                                      61.1-1.ph3                                                                @System
+krb5.x86_64                                                                                                     1.17-1.ph3                                                                @System
+libcap.x86_64                                                                                                   2.25-8.ph3                                                                @System
+libdb.x86_64                                                                                                    5.3.28-2.ph3                                                              @System
+libgcc.x86_64                                                                                                   7.3.0-4.ph3                                                               @System
+libmetalink.x86_64                                                                                              0.1.3-1.ph3                                                               @System
+libsolv.x86_64                                                                                                  0.6.35-2.ph3                                                              @System
+libssh2.x86_64                                                                                                  1.9.0-2.ph3                                                               @System
+libstdc++.x86_64                                                                                                7.3.0-4.ph3                                                               @System
+lttng-ust.x86_64                                                                                                2.10.2-2.ph3                                                              @System
+lua.x86_64                                                                                                      5.3.5-2.ph3                                                               @System
+ncurses-libs.x86_64                                                                                             6.1-2.ph3                                                                 @System
+nspr.x86_64                                                                                                     4.21-1.ph3                                                                @System
+nss-libs.x86_64                                                                                                 3.44-3.ph3                                                                @System
+openssl.x86_64                                                                                                  1.0.2u-2.ph3                                                              @System
+photon-release.noarch                                                                                           3.0-5.ph3                                                                 @System
+photon-repos.noarch                                                                                             3.0-4.ph3                                                                 @System
+pkg-config.x86_64                                                                                               0.29.2-2.ph3                                                              @System
+popt.x86_64                                                                                                     1.16-5.ph3                                                                @System
+powershell.x86_64                                                                                               6.2.3-1.ph3                                                               @System
+readline.x86_64                                                                                                 7.0-2.ph3                                                                 @System
+rpm-libs.x86_64                                                                                                 4.14.2-6.ph3                                                              @System
+sqlite-libs.x86_64                                                                                              3.31.1-1.ph3                                                              @System
+tdnf.x86_64                                                                                                     2.0.0-11.ph3                                                              @System
+tdnf-cli-libs.x86_64                                                                                            2.0.0-11.ph3                                                              @System
+toybox.x86_64                                                                                                   0.8.2-1.ph3                                                               @System
+userspace-rcu.x86_64                                                                                            0.10.1-1.ph3                                                              @System
+xz-libs.x86_64                                                                                                  5.2.4-1.ph3                                                               @System
+zlib.x86_64                                                                                                     1.2.11-1.ph3                                                              @System
+zlib-devel.x86_64                                                                                               1.2.11-1.ph3                                                              @System
 
 
 
