@@ -7,6 +7,7 @@ functions:
     handler: ./handler
     image: cmstraka/nsxt-tag-sync:latest
     environment:
+      function_debug: true
       skip_nsx_cert_check: true
       development_environment: false
       debug_writehost: true

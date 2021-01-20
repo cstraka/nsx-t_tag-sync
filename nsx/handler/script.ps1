@@ -5,7 +5,14 @@ Set-PowerCLIConfiguration -InvalidCertificateAction Ignore  -DisplayDeprecationW
 #production inputs
 $SECRETS_FILE = "/var/openfaas/secrets/nsx-secrets"
 $json = $args | ConvertFrom-Json
-Write-Host "DEBUG: json=`"$($json | Format-List | Out-String)`""
+
+if($env:function_debug -eq "true") {
+    Write-Host "DEBUG: json=`"$($json | Format-List | Out-String)`""
+    $arguments = $json.Arguments
+    foreach ($argument in $arguments) {
+        Write-Host "DEBUG: argument=`"$($argument | Format-List | Out-String)`""
+    }
+}
 
 $SECRETS_CONFIG = (Get-Content -Raw -Path $SECRETS_FILE | ConvertFrom-Json)
 
