@@ -18,8 +18,12 @@ $SECRETS_CONFIG = (Get-Content -Raw -Path $SECRETS_FILE | ConvertFrom-Json)
 
 # Process payload sent from vCenter Server Event
 $vcenter = $SECRETS_CONFIG.vCenter_SERVER
-$vmMoRef = $json.data.vm.vm.value
-$vm = $json.data.vm.name
+
+$separator = "object"," "
+$option = [System.StringSplitOptions]::RemoveEmptyEntries
+$FullFormattedMessage = $json.data.FullFormattedMessage.split($separator,$option)
+$FullFormattedMessage = $FullFormattedMessage.split([Environment]::NewLine)
+$vm = $FullFormattedMessage[$FullFormattedMessage.count-1]
 
 #Assigning credentials securely
 $userName = $SECRETS_CONFIG.vCenter_USERNAME

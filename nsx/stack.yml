@@ -14,4 +14,4 @@ functions:
     secrets:
       - nsx-secrets
     annotations:
-      topic: com.vmware.cis.tagging.detach,com.vmware.cis.tagging.attach
+      topic: com.vmware.cis.tagging.attach
