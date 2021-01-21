@@ -1,9 +1,17 @@
+# Test if PowerCLI Module is installed
+if (Get-Module -ListAvailable -Name VMware.PowerCLI) {
+    Write-Host "Module exists"
+} 
+else {
+    Write-Host "Module does not exist"
+    Install-Module -Name VMware.PowerCLI
+}
 
 Set-PowerCLIConfiguration -InvalidCertificateAction Ignore  -DisplayDeprecationWarnings $false -ParticipateInCeip $false -Confirm:$false | Out-Null
 
 # Process function Secrets passed in
 $SECRETS_FILE = "/var/openfaas/secrets/vro-secrets"
-$SECRETS_CONFIG = (Get-Content -Raw -Path $SECRETS_CONFIG | ConvertFrom-Json)
+$SECRETS_CONFIG = (Get-Content -Raw -Path $SECRETS_FILE | ConvertFrom-Json)
 
 # Process payload sent from vCenter Server Event
 $json = $args | ConvertFrom-Json
