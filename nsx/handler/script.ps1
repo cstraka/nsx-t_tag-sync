@@ -27,7 +27,8 @@ if($env:function_debug -eq "true") {
 }
 
 # Process payload sent from vCenter Server Event
-$vcenter = $SECRETS_CONFIG.vCenter_SERVER
+$vcenter = ($json.source -replace "https://","" -replace "/sdk","")
+#$vcenter = $SECRETS_CONFIG.vCenter_SERVER
 
 $separator = "object"," "
 $option = [System.StringSplitOptions]::RemoveEmptyEntries
@@ -49,9 +50,10 @@ $nsxJSON = @{}
 $nsxList = New-Object System.Collections.ArrayList
 
 #Read VM tags from vCenter
-$tags = Get-VM -name $vm -server $vcenter | Get-TagAssignment
-$vmID = Get-VM -name $vm -server $vcenter
-$vmPersistentID = $vmID.PersistentId
+
+$vmPersistentID = Get-VM -name $vm -server $vcenter | Select-object PersistentId
+$tags = Get-VM -id $vmPersistentID -server $vcenter | Get-TagAssignment
+ 
 foreach ($tag in $tags)
 {
     $tagString = $tag.tag.ToString()
