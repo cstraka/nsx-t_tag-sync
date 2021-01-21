@@ -18,14 +18,6 @@ if($env:function_debug -eq "true") {
     Write-Host "DEBUG: json=`"$($json | Format-List | Out-String)`""
 }
 
-if($env:function_debug -eq "true") {
-    Write-Host "DEBUG: json=`"$($json | Format-List | Out-String)`""
-    $arguments = $json.Arguments
-    foreach ($argument in $arguments) {
-        Write-Host "DEBUG: argument=`"$($argument | Format-List | Out-String)`""
-    }
-}
-
 # Process payload sent from vCenter Server Event
 $vcenter = ($json.source -replace "https://","" -replace "/sdk","")
 #$vcenter = $SECRETS_CONFIG.vCenter_SERVER
@@ -35,6 +27,11 @@ $option = [System.StringSplitOptions]::RemoveEmptyEntries
 $FullFormattedMessage = $json.data.FullFormattedMessage.split($separator,$option)
 $FullFormattedMessage = $FullFormattedMessage.split([Environment]::NewLine)
 $vm = $FullFormattedMessage[$FullFormattedMessage.count-1]
+
+if($vmMoRef -eq "" -or $vm -eq "") {
+    Write-Host "Unable to retrieve VM Object from Event payload, please ensure Event contains VM result"
+    exit
+}
 
 #Assigning credentials securely
 $userName = $SECRETS_CONFIG.vCenter_USERNAME

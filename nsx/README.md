@@ -325,6 +325,14 @@ We will now need to tag and push the image to our own repository to use as a bas
 	
 
 
+cd ~/NSX-T_Tag-Sync
+git pull https://github.com/cstraka/NSX-T_Tag-Sync.git
+cd nsx
+faas-cli up --tls-no-verify
+kubectl get pods -A
+kubectl logs -n openfaas-fn 
+kubectl exec --stdin --tty -n openfaas-fn nsxttagsync-6b4dbfd676-w6tcd -- /bin/bash
+
 
 
 
