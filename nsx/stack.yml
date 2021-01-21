@@ -5,7 +5,7 @@ functions:
   nsxttagsync:
     lang: powercli
     handler: ./handler
-    image: vmware/powerclicore:latest
+    image: cmstraka/powerclicore:latest
     environment:
       function_debug: true
       skip_nsx_cert_check: true
