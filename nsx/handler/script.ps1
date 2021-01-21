@@ -41,6 +41,7 @@ $password = convertto-securestring $SECRETS_CONFIG.vCenter_PASSWORD -AsPlainText
 $Credentials = New-Object System.Management.Automation.PSCredential $userName,$password
 
 #connecting to VI server
+Write-Host "Connecting to VI Server..."
 Connect-VIServer -Server $vcenter -Protocol https -Credential $credentials
 
 $jsonTags = @{}
@@ -59,29 +60,24 @@ foreach ($tag in $tags)
     $tagArray = $tagString.split('/')
     $tagList.add(@{"scope"=$tagArray[0];"tag"=$tagArray[1]})
     $nsxList.add(@{"tag"=$tagArray[1];"scope"=$tagArray[0]})
+    if($env:function_debug -eq "true") {
+        write-host $tagString
+    }
 }
 $vmList.add(@{"viServer"=$vcenter;"name"=$vm;"vmPersisitentID"=$vmID.PersistentID;"vmID"=$vmID.Id;"tags"=$tagList;})
 $jsonTags.add("data",$vmList)
 
-if($env:development_environment -eq "true") {
-    $jsonTags | ConvertTo-Json -depth 10 | Out-File "d:\virtualmachines.json"
-} else {
-    $jsonTags | ConvertTo-Json -depth 10
-}
-$body = $jsonTags | ConvertTo-Json -depth 10
-
-#Write-Host "Disconnecting from vCenter Server ..."
+Write-Host "Disconnecting from vCenter Server ..."
 Disconnect-VIServer * -Confirm:$false
 
 $nsxTags.add("external_id",$vmPersistentID)
 $nsxTags.add("tags",$nsxList)
 
 if($env:development_environment -eq "true") {
-    $nsxTags | ConvertTo-Json -depth 10 | Out-File "d:\NSX-virtualmachines.json"
+    $nsxBody = $nsxTags | ConvertTo-Json -depth 10 | Out-File "d:\NSX-virtualmachines.json"
 } else {
-    $nsxTags | ConvertTo-Json -depth 10
+    $nsxBody = $nsxTags | ConvertTo-Json -depth 10
 }
-$nsxBody = $nsxTags | ConvertTo-Json -depth 10
 
 # Basic Auth for nsx execution
 $pair = "$($SECRETS_CONFIG.NSX_USERNAME):$($SECRETS_CONFIG.NSX_PASSWORD)"
