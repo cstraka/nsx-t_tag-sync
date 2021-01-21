@@ -1,10 +1,15 @@
+
 Set-PowerCLIConfiguration -InvalidCertificateAction Ignore  -DisplayDeprecationWarnings $false -ParticipateInCeip $false -Confirm:$false | Out-Null
 
 # Process function Secrets passed in
+$SECRETS_FILE = "/var/openfaas/secrets/vro-secrets"
+$SECRETS_CONFIG = (Get-Content -Raw -Path $SECRETS_CONFIG | ConvertFrom-Json)
 
-#production inputs
-$SECRETS_FILE = "/var/openfaas/secrets/nsx-secrets"
+# Process payload sent from vCenter Server Event
 $json = $args | ConvertFrom-Json
+if($env:function_debug -eq "true") {
+    Write-Host "DEBUG: json=`"$($json | Format-List | Out-String)`""
+}
 
 if($env:function_debug -eq "true") {
     Write-Host "DEBUG: json=`"$($json | Format-List | Out-String)`""
@@ -14,7 +19,7 @@ if($env:function_debug -eq "true") {
     }
 }
 
-$SECRETS_CONFIG = (Get-Content -Raw -Path $SECRETS_FILE | ConvertFrom-Json)
+$SECRETS_CONFIG = (Get-Content -Raw -Path $SECRETS_CONFIG | ConvertFrom-Json)
 
 # Process payload sent from vCenter Server Event
 $vcenter = $SECRETS_CONFIG.vCenter_SERVER
@@ -32,11 +37,6 @@ $Credentials = New-Object System.Management.Automation.PSCredential $userName,$p
 
 #connecting to VI server
 Connect-VIServer -Server $vcenter -Protocol https -Credential $credentials
-
-if($vmMoRef -eq "" -or $vm -eq "") {
-    Write-Host "Unable to retrieve VM Object from Event payload, please ensure Event contains VM result"
-    exit
-}
 
 $jsonTags = @{}
 $nsxTags = @{}
