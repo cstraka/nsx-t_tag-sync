@@ -1,4 +1,4 @@
-# Test if PowerCLI Module is installed
+# Test if PowerCLI Module is installed, install if not
 if (Get-Module -ListAvailable -Name VMware.PowerCLI) {
     Write-Host "Module exists"
 } else {
@@ -44,12 +44,8 @@ $Credentials = New-Object System.Management.Automation.PSCredential $userName,$p
 Write-Host "Connecting to VI Server..."
 Connect-VIServer -Server $vcenter -Protocol https -Credential $credentials
 
-#Create the JSON Tagging structure for NSX
-#$jsonTags = @{}
+# Create the JSON Tagging structure for NSX
 $nsxJSON = @{}
-
-#$vmList = New-Object System.Collections.ArrayList
-#$tagList = New-Object System.Collections.ArrayList
 $nsxList = New-Object System.Collections.ArrayList
 
 #Read VM tags from vCenter
@@ -60,14 +56,11 @@ foreach ($tag in $tags)
 {
     $tagString = $tag.tag.ToString()
     $tagArray = $tagString.split('/')
-    #$tagList.add(@{"scope"=$tagArray[0];"tag"=$tagArray[1]})
     $nsxList.add(@{"tag"=$tagArray[1];"scope"=$tagArray[0]})
     if($env:function_debug -eq "true") {
         write-host $tagString
     }
 }
-#$vmList.add(@{"viServer"=$vcenter;"name"=$vm;"vmPersisitentID"=$vmID.PersistentID;"vmID"=$vmID.Id;"tags"=$tagList;})
-#$jsonTags.add("data",$vmList)
 
 Write-Host "Disconnecting from vCenter Server ..."
 Disconnect-VIServer * -Confirm:$false
