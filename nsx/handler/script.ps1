@@ -47,9 +47,9 @@ $nsxList = New-Object System.Collections.ArrayList
 
 #Read VM tags from vCenter
 
-$vmPersistentID = Get-VM -name $vm -server $vcenter | Select-object PersistentId
-$tags = Get-VM -id $vmPersistentID -server $vcenter | Get-TagAssignment
- 
+$vm = Get-VM -name $vm -server $vcenter | Select-object name,PersistentId
+$tags = Get-VM -id $vm.PersistentId -server $vcenter | Get-TagAssignment
+
 foreach ($tag in $tags)
 {
     $tagString = $tag.tag.ToString()
@@ -76,7 +76,7 @@ $base64 = [System.Convert]::ToBase64String($bytes)
 $basicAuthValue = "Basic $base64"
 
 # Authencticate to NSX
-$nsxAuthURL = "https://$($SECRETS_CONFIG.NSX_SERVER)/api/v1/fabric/virtual-machines?external_id=$vmPersistentID"
+$nsxAuthURL = "https://$($SECRETS_CONFIG.NSX_SERVER)/api/v1/fabric/virtual-machines?external_id=" + $vm.PersistentID
 $headers = @{
     "Authorization"="$basicAuthValue";
     "Accept="="application/json";
@@ -92,7 +92,7 @@ if($env:debug_writehost -eq "true") {
     Write-Host "DEBUG: nsxURL=`"$($nsxUrl | Format-List | Out-String)`""
     Write-Host "DEBUG: headers=`"$($headers | Format-List | Out-String)`""
     Write-Host "DEBUG: nsxbody=`"$($nsxBody | Format-List | Out-String)`""
-    Write-Host "DEBUG: Applying vSphere Tags for $vm to NSX-T"
+    Write-Host "DEBUG: Applying vSphere Tags for " $vm.name "to NSX-T"
 }
 
 # POST to NSX
