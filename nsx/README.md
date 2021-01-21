@@ -90,7 +90,7 @@ URL: https://phxlvveba01.itplab.local/function/nsxttagsync.openfaas-fn
 [root@phxlvdocker01 nsx]#
 
 Monitor the Activities
-root@phxlvveba01 [ ~ ]# kubectl get pods -A
+root@phxlvveba01 [ ~ ]# kubectl get pod -A
 NAMESPACE        NAME                                               READY   STATUS             RESTARTS   AGE
 kube-system      antrea-agent-dfr64                                 2/2     Running            2          18d
 kube-system      antrea-controller-647fc85df-pq5vj                  1/1     Running            2          18d
