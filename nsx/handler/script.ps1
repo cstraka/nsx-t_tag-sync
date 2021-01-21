@@ -68,11 +68,7 @@ $nsxJSON.add("external_id",$vmPersistentID)
 $nsxJSON.add("tags",$nsxList)
 
 # Write nsxJSON to the NSX REST call Payload
-if($env:development_environment -eq "true") {
-    $nsxBody = $nsxJSON | ConvertTo-Json -depth 10 | Out-File "d:\NSX-virtualmachines.json"
-} else {
-    $nsxBody = $nsxJSON | ConvertTo-Json -depth 10
-}
+$nsxBody = $nsxJSON | ConvertTo-Json -depth 10
 
 # Create Basic Auth string for NSX authentication
 $pair = "$($SECRETS_CONFIG.NSX_USERNAME):$($SECRETS_CONFIG.NSX_PASSWORD)"
