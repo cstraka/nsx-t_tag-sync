@@ -35,7 +35,7 @@ faas-cli deploy -f stack.yml --tls-no-verify
 Step 4 - To remove the function and secret from VMware Event Broker Appliance
 
 ```
-VEBA_GATEWAY=https://veba.primp-industries.com
+VEBA_GATEWAY=https://phxlvveba01.itplab.local
 export OPENFAAS_URL=${VEBA_GATEWAY} # this is handy so you don't have to keep specifying OpenFaaS endpoint in command-line
 
 faas-cli remove -f stack.yml --tls-no-verify
@@ -61,6 +61,13 @@ faas-cli push -f stack.yml
 faas-cli push --tls-no-verify -f stack.yml
 ```
 
+The Hard Way
+faas-cli build -f stack.yml
+faas-cli push -f stack.yml
+faas-cli deploy -f stack.yml --tls-no-verify
+
+The Easy Way
+faas-cli up --tls-no-verify
 
 
 In ITP Lab
@@ -120,7 +127,7 @@ Examine Logs
 2021-01-11T21:25:53.259Z        ERROR   [OPENFAAS]      openfaas/openfaas.go:249        could not invoke function       {"function": "nsxttagsync.openfaas-fn", "topic": "com.vmware.cis.tagging.attach", "retries": 3, "error": "All attempts fail:\n#1: function \"nsxttagsync.openfaas-fn\" on topic \"com.vmware.cis.tagging.attach\" returned non successful status code 500: \"\"\n#2: function \"nsxttagsync.openfaas-fn\" on topic \"com.vmware.cis.tagging.attach\" returned non successful status code 500: \"\"\n#3: function \"nsxttagsync.openfaas-fn\" on topic \"com.vmware.cis.tagging.attach\" returned non successful status code 500: \"\""}
 2021-01-11T21:25:53.259Z        INFO    [OPENFAAS]      openfaas/openfaas.go:197        finished processing of event    {"eventID": "742cc650-79e1-4d17-883d-7a070103e2fb", "topic": "com.vmware.cis.tagging.attach"}
 
-root@phxlvveba01 [ ~ ]# kubectl get pod -A
+root@phxlvveba01 [ ~ ]# kubectl get pods -A
 NAMESPACE        NAME                                               READY   STATUS      RESTARTS   AGE
 kube-system      antrea-agent-dfr64                                 2/2     Running     2          21d
 kube-system      antrea-controller-647fc85df-pq5vj                  1/1     Running     2          21d
@@ -206,6 +213,11 @@ CONTAINER ID   IMAGE                           COMMAND   CREATED          STATUS
 321256888f3b   cmstraka/veba-base:latest       "bash"    10 seconds ago   Up 9 seconds              veba-testfunction
 b1a6870d478e   cmstraka/nsxt-tag-sync:latest   "bash"    2 hours ago      Up 2 hours     8080/tcp   veba-test
 
+
+Copy a script into a running container (do this after a new script has been uploaded to a new image
+docker cp script.ps1 4832bf5d5048:/root/function/script.ps1
+
+
 Packages for Working VRO script
 root [ ~ ]# tdnf list
 Refreshing metadata for: 'VMware Photon Linux 3.0 (x86_64)'
@@ -267,6 +279,51 @@ userspace-rcu.x86_64                                                            
 xz-libs.x86_64                                                                                                  5.2.4-1.ph3                                                               @System
 zlib.x86_64                                                                                                     1.2.11-1.ph3                                                              @System
 zlib-devel.x86_64                                                                                               1.2.11-1.ph3                                                              @System
+
+Using docker pull it down to your local machine.
+	docker pull vmware/powerclicore:latest
+
+Once it has been pulled down use docker images to see the image information.
+	docker images
+docker images
+REPOSITORY                           TAG                 IMAGE ID            CREATED             SIZE
+cmstraka/nsxt-tag-sync               latest              1e9b5e4a2047        27 minutes ago      227MB
+cmstraka/powerclicore                latest              ed9e07c2bfe4        2 hours ago         227MB
+photon                               3.0                 dfd3fd2bc370        11 days ago         36.3MB
+photon                               latest              dfd3fd2bc370        11 days ago         36.3MB
+vmware/veba-event-router             v0.5.0              14a503051fdc        5 weeks ago         202MB
+embano1/tinywww                      latest              b73df0803467        3 months ago        74.4MB
+projectcontour/contour               v1.9.0              e5264899280b        3 months ago        38.3MB
+envoyproxy/envoy                     v1.15.1             a8b75a4b4116        3 months ago        110MB
+k8s.gcr.io/kube-proxy                v1.18.3             3439b7546f29        8 months ago        117MB
+k8s.gcr.io/kube-scheduler            v1.18.3             76216c34ed0c        8 months ago        95.3MB
+k8s.gcr.io/kube-apiserver            v1.18.3             7e28efa976bd        8 months ago        173MB
+k8s.gcr.io/kube-controller-manager   v1.18.3             da26705ccb4b        8 months ago        162MB
+vmware/powerclicore                  latest              a0fceeaed43e        8 months ago        372MB
+cmstraka/nsxt-tag-sync               <none>              a0fceeaed43e        8 months ago        372MB
+openfaas/queue-worker                0.11.0              156f3ea15fa6        8 months ago        9.76MB
+antrea/antrea-ubuntu                 v0.6.0              36cc5d6d96b8        8 months ago        319MB
+openfaas/faas-netes                  0.10.3              9f1afd1e679c        9 months ago        71.6MB
+openfaas/basic-auth-plugin           0.18.17             4d5c7c56e1f4        9 months ago        16.6MB
+openfaas/gateway                     0.18.17             9496eadeb6e5        9 months ago        30MB
+openfaas/faas-idler                  0.3.0               93f8e669f6cf        10 months ago       26.4MB
+functions/hubstats                   latest              01affa91e9e4        11 months ago       29.3MB
+k8s.gcr.io/pause                     3.2                 80d28bedfe5d        11 months ago       683kB
+nats-streaming                       0.17.0              411737a82b95        11 months ago       16MB
+k8s.gcr.io/coredns                   1.6.7               67da37a9a360        11 months ago       43.8MB
+k8s.gcr.io/etcd                      3.4.3-0             303ce5db0e90        15 months ago       288MB
+prom/prometheus                      v2.11.0             b97ed892eb23        18 months ago       126MB
+prom/alertmanager                    v0.18.0             ce3c87f17369        18 months ago       51.9MB
+	
+
+We will now need to tag and push the image to our own repository to use as a base image. For the tag identifier use the Image ID from docker images.
+	docker tag a0fceeaed43e dstamen/test
+	docker push dstamen/test
+	
+	
+	
+	
+
 
 
 
