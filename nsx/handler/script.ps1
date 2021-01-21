@@ -19,8 +19,7 @@ if($env:function_debug -eq "true") {
 }
 
 # Process payload sent from vCenter Server Event
-$vcenter = ($json.source -replace "https://","" -replace "/sdk","")
-#$vcenter = $SECRETS_CONFIG.vCenter_SERVER
+$vcenter = $SECRETS_CONFIG.vCenter_SERVER
 
 $separator = "object"," "
 $option = [System.StringSplitOptions]::RemoveEmptyEntries
