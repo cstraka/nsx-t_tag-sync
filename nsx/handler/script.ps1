@@ -3,11 +3,11 @@ $SECRETS_FILE = "/var/openfaas/secrets/nsx-secrets"
 $SECRETS_CONFIG = (Get-Content -Raw -Path $SECRETS_FILE | ConvertFrom-Json)
 
 # Test if PowerCLI Module is installed, install if not
-ifs(Get-Module -ListAvailable -Name VMware.PowerCLI) {
+if(Get-Module -ListAvailable -Name VMware.VimAutomation.Core) {
     Write-Host "Module exists"
 } else {
     Write-Host "Module does not exist"
-    Install-Module -Name VMware.PowerCLI
+    Install-Package -Name VMware.VimAutomation.Core
 }
 Set-PowerCLIConfiguration -InvalidCertificateAction Ignore  -DisplayDeprecationWarnings $false -ParticipateInCeip $false -Confirm:$false | Out-Null
 
