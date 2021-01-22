@@ -62,7 +62,7 @@ foreach ($tag in $tags)
 Write-Host "Disconnecting from vCenter Server ..."
 Disconnect-VIServer * -Confirm:$false
 
-$nsxJSON.add("external_id",$vmPersistentID)
+$nsxJSON.add("external_id",$vm.PersistentId)
 $nsxJSON.add("tags",$nsxList)
 
 # Write nsxJSON to the NSX REST call Payload
