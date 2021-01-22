@@ -46,10 +46,9 @@ $nsxList = New-Object System.Collections.ArrayList
 
 #Read VM tags from vCenter
 
-$vm = Get-VM -name $vm -server $vcenter | Select-object name,PersistentId
-$tags = Get-VM -id $vm.PersistentId -server $vcenter | Get-TagAssignment
+$vm = Get-VM -name $vm | Select-Object Name,PersistentID,@{Name="Tags";Expression={(Get-TagAssignment -Entity $_).Tag.Name}}
 
-foreach ($tag in $tags)
+foreach ($tag in $vm.Tags)
 {
     $tagString = $tag.tag.ToString()
     $tagArray = $tagString.split('/')
