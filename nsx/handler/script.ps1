@@ -1,5 +1,5 @@
 # Process function Secrets passed in
-$SECRETS_FILE = "/var/openfaas/secrets/vro-secrets"
+$SECRETS_FILE = "/var/openfaas/secrets/nsx-secrets"
 $SECRETS_CONFIG = (Get-Content -Raw -Path $SECRETS_FILE | ConvertFrom-Json)
 
 # Test if PowerCLI Module is installed, install if not
