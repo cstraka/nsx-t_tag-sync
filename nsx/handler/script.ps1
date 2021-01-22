@@ -46,13 +46,15 @@ $nsxList = New-Object System.Collections.ArrayList
 
 #Read VM tags from vCenter
 
-$vm = Get-VM -name $vm | Select-Object Name,PersistentID,@{Name="Tags";Expression={(Get-TagAssignment -Entity $_).Tag.Name}}
+$vm = Get-VM -name $vm | Select-Object Name,PersistentID
+$tags = Get-VM -name $vm.name | Get-TagAssignment
 
-foreach ($tag in $vm.Tags)
+foreach ($tag in $tags)
 {
     $tagString = $tag.tag.ToString()
     $tagArray = $tagString.split('/')
     $nsxList.add(@{"tag"=$tagArray[1];"scope"=$tagArray[0]})
+    write-host $tagArray
     if($env:function_debug -eq "true") {
         write-host $tagString
     }
