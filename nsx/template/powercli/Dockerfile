@@ -7,7 +7,8 @@ WORKDIR /root
 RUN echo "/usr/bin/pwsh" >> /etc/shells && \
     echo "/bin/pwsh" >> /etc/shells && \
     tdnf install -y powershell-6.2.3-1.ph3 unzip && \
-    pwsh -c "Set-PSRepository -Name PSGallery -InstallationPolicy Trusted" && \
+	pwsh -c "Install-Package -Name VMware.VimAutomation.Core" && \    
+	pwsh -c "Set-PSRepository -Name PSGallery -InstallationPolicy Trusted" && \
     find / -name "net45" | xargs rm -rf && \
     tdnf erase -y unzip && \
     tdnf clean all
