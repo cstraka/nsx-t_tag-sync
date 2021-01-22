@@ -2,16 +2,16 @@ provider:
   name: openfaas
   gateway: https://phxlvveba01.itplab.local
 functions:
-  nsxttagsync:
+  powershell-vro:
     lang: powercli
     handler: ./handler
-    image: cmstraka/nsxt-tag-sync
+    image: cmstraka/powerclicore:latest
     environment:
       write_debug: true
       read_debug: true
-      function_debug: false
+      function_debug: true
       skip_vro_cert_check: true
     secrets:
       - vro-secrets
     annotations:
-      topic: com.vmware.cis.tagging.detach,com.vmware.cis.tagging.attach
+      topic: com.vmware.cis.tagging.detach

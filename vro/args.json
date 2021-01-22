@@ -1,10 +1,11 @@
 {
     "source": "https://vcenter7-phx.itplab.local/sdk",
     "data": {
+      "vm": {
+        "name": "blue-app202",
         "vm": {
-            "vm": {
-                "value:": "blue-app202"
-            }
+          "value": "vm-1086"
         }
+      }
     }
 }
