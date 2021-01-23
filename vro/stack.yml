@@ -2,7 +2,7 @@ provider:
   name: openfaas
   gateway: https://phxlvveba01.itplab.local
 functions:
-  nsxttagsync:
+  nsxttagsync-vro:
     lang: powercli
     handler: ./handler
     image: cmstraka/powerclicore:latest
