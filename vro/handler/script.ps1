@@ -19,6 +19,7 @@ $FullFormattedMessage = $json.data.FullFormattedMessage.split($separator,$option
 $FullFormattedMessage = $FullFormattedMessage.split([Environment]::NewLine)
 
 $vm = $FullFormattedMessage[$FullFormattedMessage.count-1]
+$vroVmId = $vcenter + "/vm-1057"
 
 if($env:function_debug -eq "true") {
     Write-Host "DEBUG: VRO=$vro"
@@ -41,10 +42,30 @@ $vroBody = @"
             "value": {
                 "sdk-object":{
                     "type": "VC:VirtualMachine",
-                    "id": ""}
+                    "id": "$($vroVmId)"}
                 },
             "type": "VC:VirtualMachine",
-            "name": "$vm",
+            "name": "vm",
+            "scope": "local"
+        },
+        {
+            "value": {
+                "string":{
+                    "value": "$(Tenant)"
+                }
+            },
+            "type": "string",
+            "name": "categoryName",
+            "scope": "local"
+        },
+        {
+            "value": {
+                "string":{
+                    "value": "$(Blue)"
+                }
+            },
+            "type": "string",
+            "name": "tagToFind",
             "scope": "local"
         }
 	]
