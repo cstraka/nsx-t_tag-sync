@@ -75,24 +75,21 @@ $bytes = [System.Text.Encoding]::ASCII.GetBytes($pair)
 $base64 = [System.Convert]::ToBase64String($bytes)
 $basicAuthValue = "Basic $base64"
 
-# Authencticate to NSX
-$nsxAuthURL = "https://$($SECRETS_CONFIG.NSX_SERVER)/api/v1/fabric/virtual-machines?external_id=" + $vm.PersistentID
+# Render the NSX URL to POST VM Tag update
+$nsxUrl = "https://$($SECRETS_CONFIG.NSX_SERVER)/api/v1/fabric/virtual-machines?action=update_tags"
+
+#URL Headers
 $headers = @{
     "Authorization"="$basicAuthValue";
     "Accept="="application/json";
     "Content-Type"="application/json";
 }
 
-# Render the NSX URL to POST VM Tag update
-$nsxUrl = "https://$($SECRETS_CONFIG.NSX_SERVER)/api/v1/fabric/virtual-machines?action=update_tags"
-
 if($env:debug_writehost -eq "true") {
-    Write-Host "DEBUG: body=`"$($nsxAuthURL | Format-List | Out-String)`""
-    Write-Host "DEBUG: body=`"$($body | Format-List | Out-String)`""
     Write-Host "DEBUG: nsxURL=`"$($nsxUrl | Format-List | Out-String)`""
     Write-Host "DEBUG: headers=`"$($headers | Format-List | Out-String)`""
     Write-Host "DEBUG: nsxbody=`"$($nsxBody | Format-List | Out-String)`""
-    Write-Host "DEBUG: Applying vSphere Tags for " $vm.name "to NSX-T"
+    Write-Host "DEBUG: Applying vSphere Tags for "$vm.name "to NSX-T"
 }
 
 # POST to NSX
