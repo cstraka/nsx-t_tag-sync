@@ -28,15 +28,12 @@ if($env:function_debug -eq "true") {
     Write-Host "DEBUG: vm=$vm"
     Write-Host "DEBUG: workflowID=$vroWorkflowID"
 }
-if($vmMoRef -eq "" -or $vm -eq "") {
+if($vm -eq "") {
     Write-Host "Unable to retrieve VM Object from Event payload, please ensure Event contains VM result"
     exit
 }
 
-# e.g. mgmt-vcsa-01.cpbu.corp/vm-2660
-$vroVmId = "$vcenter/$vmMoRef"
-
-$body = @"
+$vroBody = @"
 {
     "parameters":
 	[
@@ -44,7 +41,7 @@ $body = @"
             "value": {
                 "sdk-object":{
                     "type": "VC:VirtualMachine",
-                    "id": "$($vroVmId)"}
+                    "id": ""}
                 },
             "type": "VC:VirtualMachine",
             "name": "$vm",
@@ -69,17 +66,16 @@ $headers = @{
 $vroUrl = "https://$($vro):443/vco/api/workflows/$($SECRETS_CONFIG.VRO_WORKFLOW_ID)/executions"
 
 if($env:function_debug -eq "true") {
-    Write-Host "DEBUG: vRoVmID=$vroVmId"
     Write-Host "DEBUG: TagCategory=$($SECRETS_CONFIG.TAG_CATEGORY_NAME)"
     Write-Host "DEBUG: TagName=$($SECRETS_CONFIG.TAG_NAME)"
     Write-Host "DEBUG: vRoURL=`"$($vroUrl | Format-List | Out-String)`""
     Write-Host "DEBUG: headers=`"$($headers | Format-List | Out-String)`""
-    Write-Host "DEBUG: body=$body"
+    Write-Host "DEBUG: body=$vroBody"
 }
 
 Write-Host "Synchronizing vSphere Tags to VM: $vm in NSX-T"
 if($env:skip_vro_cert_check -eq "true") {
-    Invoke-Webrequest -Uri $vroUrl -Method POST -Headers $headers -SkipHeaderValidation -Body $body -SkipCertificateCheck
+    Invoke-Webrequest -Uri $vroUrl -Method POST -Headers $headers -SkipHeaderValidation -Body $vroBody -SkipCertificateCheck
 } else {
-    Invoke-Webrequest -Uri $vroUrl -Method POST -Headers $headers -SkipHeaderValidation -Body $body
+    Invoke-Webrequest -Uri $vroUrl -Method POST -Headers $headers -SkipHeaderValidation -Body $vroBody
 }
