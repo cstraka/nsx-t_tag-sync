@@ -1,28 +1,40 @@
-
 # Process function Secrets passed in
 $SECRETS_FILE = "/var/openfaas/secrets/vro-secrets"
 $SECRETS_CONFIG = (Get-Content -Raw -Path $SECRETS_FILE | ConvertFrom-Json)
 
-# Process payload sent from vCenter Server Event
+# Process payload sent from vCenter Server Event 
 $json = $args | ConvertFrom-Json
 if($env:function_debug -eq "true") {
     Write-Host "DEBUG: json=`"$($json | Format-List | Out-String)`""
 }
 
-$vcenter = ($json.source -replace "https://","" -replace "/sdk","");
-$vmMoRef = $json.data.vm.vm.value;
-$vm = $json.data.vm.name;
+$vro = $SECRETS_CONFIG.VRO_SERVER;
+$vroUser = $SECRETS_CONFIG.VRO_USERNAME;
+$vroWorkflowID = $SECRETS_CONFIG.VRO_WORKFLOW_ID;
+$vcenter = ($json.source -replace "https://","" -replace "/sdk","")
 
-if($vmMoRef -eq "" -or $vm -eq "") {
+$separator = "object"," "
+$option = [System.StringSplitOptions]::RemoveEmptyEntries
+$FullFormattedMessage = $json.data.FullFormattedMessage.split($separator,$option)
+$FullFormattedMessage = $FullFormattedMessage.split([Environment]::NewLine)
+
+$vm = $FullFormattedMessage[$FullFormattedMessage.count-1]
+$vroVmId = $vcenter + "/vm-1057"
+
+if($env:function_debug -eq "true") {
+    Write-Host "DEBUG: VRO=$vro"
+    Write-Host "DEBUG: vm=$vroUser"
+    Write-Host "DEBUG: vCenter=$vcenter"
+    Write-Host "DEBUG: vmMoRef=$vmMoRef"
+    Write-Host "DEBUG: vm=$vm"
+    Write-Host "DEBUG: workflowID=$vroWorkflowID"
+}
+if($vm -eq "") {
     Write-Host "Unable to retrieve VM Object from Event payload, please ensure Event contains VM result"
     exit
 }
 
-# e.g. mgmt-vcsa-01.cpbu.corp/vm-2660
-$vroVmId = "$vcenter/$vmMoRef"
-
-# assumes following vRO Workflow https://github.com/kclinden/vro-vsphere-tagging as an example
-$body = @"
+$vroBody = @"
 {
     "parameters":
 	[
@@ -39,7 +51,7 @@ $body = @"
         {
             "value": {
                 "string":{
-                    "value": "$($SECRETS_CONFIG.TAG_CATEGORY_NAME)"
+                    "value": "Tenant"
                 }
             },
             "type": "string",
@@ -49,7 +61,7 @@ $body = @"
         {
             "value": {
                 "string":{
-                    "value": "$($SECRETS_CONFIG.TAG_NAME)"
+                    "value": "Blue"
                 }
             },
             "type": "string",
@@ -72,20 +84,19 @@ $headers = @{
     "Content-Type"="application/json";
 }
 
-$vroUrl = "https://$($SECRETS_CONFIG.VRO_SERVER):443/vco/api/workflows/$($SECRETS_CONFIG.VRO_WORKFLOW_ID)/executions"
+$vroUrl = "https://$($vro):443/vco/api/workflows/$($SECRETS_CONFIG.VRO_WORKFLOW_ID)/executions"
 
 if($env:function_debug -eq "true") {
-    Write-Host "DEBUG: vRoVmID=$vroVmId"
     Write-Host "DEBUG: TagCategory=$($SECRETS_CONFIG.TAG_CATEGORY_NAME)"
     Write-Host "DEBUG: TagName=$($SECRETS_CONFIG.TAG_NAME)"
     Write-Host "DEBUG: vRoURL=`"$($vroUrl | Format-List | Out-String)`""
     Write-Host "DEBUG: headers=`"$($headers | Format-List | Out-String)`""
-    Write-Host "DEBUG: body=$body"
+    Write-Host "DEBUG: body=$vroBody"
 }
 
-Write-Host "Applying vSphere Tag: $($SECRETS_CONFIG.TAG_NAME) to VM: $vm ..."
+Write-Host "Synchronizing vSphere Tags to VM: $vm in NSX-T"
 if($env:skip_vro_cert_check -eq "true") {
-    Invoke-Webrequest -Uri $vroUrl -Method POST -Headers $headers -SkipHeaderValidation -Body $body -SkipCertificateCheck
+    Invoke-Webrequest -Uri $vroUrl -Method POST -Headers $headers -SkipHeaderValidation -Body $vroBody -SkipCertificateCheck
 } else {
-    Invoke-Webrequest -Uri $vroUrl -Method POST -Headers $headers -SkipHeaderValidation -Body $body
+    Invoke-Webrequest -Uri $vroUrl -Method POST -Headers $headers -SkipHeaderValidation -Body $vroBody
 }
