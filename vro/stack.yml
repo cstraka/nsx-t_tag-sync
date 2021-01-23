@@ -10,6 +10,6 @@ functions:
       function_debug: false
       skip_nsx_cert_check: true
     secrets:
-      - nsx-secrets
+      - vro-secrets
     annotations:
       topic: com.vmware.cis.tagging.detach
