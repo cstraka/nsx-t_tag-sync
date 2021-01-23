@@ -2,7 +2,7 @@
 $SECRETS_FILE = "/var/openfaas/secrets/vro-secrets"
 $SECRETS_CONFIG = (Get-Content -Raw -Path $SECRETS_FILE | ConvertFrom-Json)
 
-# Process payload sent from vCenter Server Event
+# Process payload sent from vCenter Server Event 
 $json = $args | ConvertFrom-Json
 if($env:function_debug -eq "true") {
     Write-Host "DEBUG: json=`"$($json | Format-List | Out-String)`""
