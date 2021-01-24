@@ -9,9 +9,22 @@ if($env:function_debug -eq "true") {
     Write-Host "DEBUG: json=`"$($json | Format-List | Out-String)`""
 }
 
+if($env:function_debug -eq "true") {
+    $arguments = $json.$arguments
+    foreach($argument in $arguments) {
+        Write-Host "Argument= "$argument
+    }
+}
+
 $vcenter = ($json.source -replace "https://","" -replace "/sdk","");
 $vmMoRef = $json.data.vm.vm.value;
-$vm = $json.data.vm.name;
+
+$separator = "object"," "
+$option = [System.StringSplitOptions]::RemoveEmptyEntries
+$FullFormattedMessage = $json.data.FullFormattedMessage.split($separator,$option)
+$FullFormattedMessage = $FullFormattedMessage.split([Environment]::NewLine)
+$vm = $FullFormattedMessage[$FullFormattedMessage.count-1]
+
 
 if($vmMoRef -eq "" -or $vm -eq "") {
     Write-Host "Unable to retrieve VM Object from Event payload, please ensure Event contains VM result"
