@@ -11,8 +11,10 @@ if($env:function_debug -eq "true") {
 
 if($env:function_debug -eq "true") {
     $arguments = $json.Arguments
+    Write-Host $json.Arguments
+    Write-Host "Arguments= "
     foreach($argument in $arguments) {
-        Write-Host "Argument= "$argument
+        Write-Host $argument
     }
 }
 
