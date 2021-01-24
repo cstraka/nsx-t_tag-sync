@@ -49,16 +49,6 @@ $vroBody = @"
                     “value”: “$vm”
                 }
             }
-        },
-        {
-            “type”: “string”,
-            “name”: “vCenterServer",
-            “scope”: “local”,
-            “value”: {
-                “string”: {
-                    “value”: “$vcenter”
-                }
-            }
         }
     ]
 }
