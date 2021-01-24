@@ -9,7 +9,7 @@ functions:
     environment:
       write_debug: true
       read_debug: true
-      function_debug: false
+      function_debug: true
       skip_vro_cert_check: true
     secrets:
       - vro-secrets

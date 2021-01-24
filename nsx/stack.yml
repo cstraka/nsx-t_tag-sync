@@ -7,8 +7,10 @@ functions:
     handler: ./handler
     image: cmstraka/powerclicore:latest
     environment:
-      function_debug: false
-      skip_nsx_cert_check: true
+      write_debug: true
+      read_debug: true
+      function_debug: true
+      skip_vro_cert_check: true
     secrets:
       - nsx-secrets
     annotations:
