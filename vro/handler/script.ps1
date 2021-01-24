@@ -70,16 +70,14 @@ $vroUrl = "https://$($SECRETS_CONFIG.VRO_SERVER):443/vco/api/workflows/$($SECRET
 
 if($env:function_debug -eq "true") {
     Write-Host "DEBUG: vRoVmID=$vroVmId"
-    Write-Host "DEBUG: TagCategory=$($SECRETS_CONFIG.TAG_CATEGORY_NAME)"
-    Write-Host "DEBUG: TagName=$($SECRETS_CONFIG.TAG_NAME)"
     Write-Host "DEBUG: vRoURL=`"$($vroUrl | Format-List | Out-String)`""
     Write-Host "DEBUG: headers=`"$($headers | Format-List | Out-String)`""
-    Write-Host "DEBUG: body=$body"
+    Write-Host "DEBUG: body=$vroBody"
 }
 
 Write-Host "Applying vSphere Tag: $($SECRETS_CONFIG.TAG_NAME) to VM: $vm ..."
 if($env:skip_vro_cert_check -eq "true") {
-    Invoke-Webrequest -Uri $vroUrl -Method POST -Headers $headers -SkipHeaderValidation -Body $vroBody -SkipCertificateCheck
+    Invoke-Webrequest -Uri $vroUrl -Method POST -Body $vroBody -Headers $headers -SkipHeaderValidation -SkipCertificateCheck
 } else {
-    Invoke-Webrequest -Uri $vroUrl -Method POST -Headers $headers -SkipHeaderValidation -Body $vroBody
+    Invoke-Webrequest -Uri $vroUrl -Method POST -Body $vroBody -Headers $headers -SkipHeaderValidation 
 }
