@@ -59,7 +59,7 @@ $vroBody = @"
                     “value”: “$vcenter”
                 }
             }
-        },
+        }
     ]
 }
 "@
