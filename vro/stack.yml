@@ -14,4 +14,4 @@ functions:
     secrets:
       - vro-secrets
     annotations:
-      topic: com.vmware.cis.tagging.detach
+      topic: com.vmware.cis.tagging.attach,com.vmware.cis.tagging.detach,DrsVmPoweredOnEvent,VmPoweredOnEvent
