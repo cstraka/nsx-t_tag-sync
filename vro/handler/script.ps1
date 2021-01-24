@@ -9,22 +9,25 @@ if($env:function_debug -eq "true") {
     Write-Host "DEBUG: json=`"$($json | Format-List | Out-String)`""
 }
 
+# Set vCneter server name to a variable from event message text
 $vcenter = ($json.source -replace "https://","" -replace "/sdk","");
 
+# Pull VM name from event message text and set it to variable
 $separator = "object"," "
 $option = [System.StringSplitOptions]::RemoveEmptyEntries
 $FullFormattedMessage = $json.data.FullFormattedMessage.split($separator,$option)
 $FullFormattedMessage = $FullFormattedMessage.split([Environment]::NewLine)
 $vm = $FullFormattedMessage[$FullFormattedMessage.count-1]
 
-
+# Test for existince of content in $vm variable and exit script early if test results false
 if($vmMoRef -eq "" -or $vm -eq "") {
     Write-Host "Unable to retrieve VM Object from Event payload, please ensure Event contains VM result"
     exit
 }
 
 # This syntax is very specific.  
-# The 'name' element (e.g. "name": "virtualMachineName" & "name": "vcenterName") MUST be an input to the VRO workflow. CASE SENSITIVE.
+# The 'name' element (e.g. "name": "virtualMachineName" & "name": "vcenterName") MUST be a named input to the VRO workflow with a matching type (e.g. 'string')
+# CASE SENSITIVE.
 $vroBody = @"
 {
     "parameters": [
@@ -64,8 +67,10 @@ $headers = @{
     "Content-Type"="application/json";
 }
 
+#Setting VRO URL
 $vroUrl = "https://$($SECRETS_CONFIG.VRO_SERVER):443/vco/api/workflows/$($SECRETS_CONFIG.VRO_WORKFLOW_ID)/executions"
 
+#writing variables to console if 'function_debug' is 'true' in stack.yml
 if($env:function_debug -eq "true") {
     Write-Host "DEBUG: vRoVmID=$vroVmId"
     Write-Host "DEBUG: vRoURL=`"$($vroUrl | Format-List | Out-String)`""
@@ -73,7 +78,7 @@ if($env:function_debug -eq "true") {
     Write-Host "DEBUG: body=$vroBody"
 }
 
-Write-Host "Applying vSphere Tag: $($SECRETS_CONFIG.TAG_NAME) to VM: $vm ..."
+#calling VRO
 if($env:skip_vro_cert_check -eq "true") {
     Invoke-Webrequest -Uri $vroUrl -Method POST -Body $vroBody -Headers $headers -SkipHeaderValidation -SkipCertificateCheck
 } else {
