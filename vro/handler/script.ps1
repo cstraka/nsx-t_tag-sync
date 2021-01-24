@@ -52,7 +52,7 @@ $vroBody = @"
         },
         {
             “type”: “string”,
-            “name”: “vCenterServer,
+            “name”: “vCenterServer",
             “scope”: “local”,
             “value”: {
                 “string”: {
