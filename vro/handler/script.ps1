@@ -36,42 +36,21 @@ if($vmMoRef -eq "" -or $vm -eq "") {
 # e.g. mgmt-vcsa-01.cpbu.corp/vm-2660
 $vroVmId = "$vcenter/vm-1086"
 
-# assumes following vRO Workflow https://github.com/kclinden/vro-vsphere-tagging as an example
-$body = @"
+# This syntax is very specific.
+$vroBody = @"
 {
-    "parameters":
-	[
+    "parameters": [
         {
-            "value": {
-                "sdk-object":{
-                    "type": "VC:VirtualMachine",
-                    "id": "$($vroVmId)"}
-                },
-            "type": "VC:VirtualMachine",
-            "name": "$vm",
-            "scope": "local"
-        },
-        {
-            "value": {
-                "string":{
-                    "value": "$($SECRETS_CONFIG.TAG_CATEGORY_NAME)"
+            “type”: “string”,
+            “name”: “name”,
+            “scope”: “local”,
+            “value”: {
+                “string”: {
+                    “value”: “$vm”
                 }
-            },
-            "type": "string",
-            "name": "categoryName",
-            "scope": "local"
-        },
-        {
-            "value": {
-                "string":{
-                    "value": "$($SECRETS_CONFIG.TAG_NAME)"
-                }
-            },
-            "type": "string",
-            "name": "tagToFind",
-            "scope": "local"
+            }
         }
-	]
+    ]
 }
 "@
 
@@ -100,7 +79,7 @@ if($env:function_debug -eq "true") {
 
 Write-Host "Applying vSphere Tag: $($SECRETS_CONFIG.TAG_NAME) to VM: $vm ..."
 if($env:skip_vro_cert_check -eq "true") {
-    Invoke-Webrequest -Uri $vroUrl -Method POST -Headers $headers -SkipHeaderValidation -Body $body -SkipCertificateCheck
+    Invoke-Webrequest -Uri $vroUrl -Method POST -Headers $headers -SkipHeaderValidation -Body $vroBody -SkipCertificateCheck
 } else {
-    Invoke-Webrequest -Uri $vroUrl -Method POST -Headers $headers -SkipHeaderValidation -Body $body
+    Invoke-Webrequest -Uri $vroUrl -Method POST -Headers $headers -SkipHeaderValidation -Body $vroBody
 }
