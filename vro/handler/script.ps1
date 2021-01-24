@@ -42,14 +42,24 @@ $vroBody = @"
     "parameters": [
         {
             “type”: “string”,
-            “name”: “name”,
+            “name”: “vroBody”,
             “scope”: “local”,
             “value”: {
                 “string”: {
                     “value”: “$vm”
                 }
             }
-        }
+        },
+        {
+            “type”: “string”,
+            “name”: “vCenterServer,
+            “scope”: “local”,
+            “value”: {
+                “string”: {
+                    “value”: “$vcenter”
+                }
+            }
+        },
     ]
 }
 "@
