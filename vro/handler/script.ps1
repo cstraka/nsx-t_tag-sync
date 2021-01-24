@@ -9,17 +9,7 @@ if($env:function_debug -eq "true") {
     Write-Host "DEBUG: json=`"$($json | Format-List | Out-String)`""
 }
 
-if($env:function_debug -eq "true") {
-    $arguments = $json.Arguments
-    Write-Host $json.Arguments
-    Write-Host "Arguments= "
-    foreach($argument in $arguments) {
-        Write-Host $argument
-    }
-}
-
 $vcenter = ($json.source -replace "https://","" -replace "/sdk","");
-$vmMoRef = $json.data.vm.vm.value;
 
 $separator = "object"," "
 $option = [System.StringSplitOptions]::RemoveEmptyEntries
@@ -33,20 +23,28 @@ if($vmMoRef -eq "" -or $vm -eq "") {
     exit
 }
 
-# e.g. mgmt-vcsa-01.cpbu.corp/vm-2660
-$vroVmId = "$vcenter/vm-1086"
-
-# This syntax is very specific.
+# This syntax is very specific.  
+# The 'name' element (e.g. "name": "virtualMachineName" & "name": "vcenterName") MUST be an input to the VRO workflow. CASE SENSITIVE.
 $vroBody = @"
 {
     "parameters": [
         {
-            “type”: “string”,
-            “name”: “vroBody”,
-            “scope”: “local”,
-            “value”: {
-                “string”: {
-                    “value”: “$vm”
+            "type": "string",
+            "name": "virtualMachineName",
+            "scope": "local",
+            "value": {
+                "string": {
+                    "value": "$vm"
+                }
+            }
+        },
+        {
+            "type": "string",
+            "name": "vcenterName",
+            "scope": "local",
+            "value": {
+                "string": {
+                    "value": "$vcenter"
                 }
             }
         }
