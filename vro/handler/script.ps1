@@ -19,7 +19,7 @@ if($vmMoRef -eq "" -or $vm -eq "") {
 }
 
 # e.g. mgmt-vcsa-01.cpbu.corp/vm-2660
-$vroVmId = "$vcenter/$vmMoRef"
+$vroVmId = "$vcenter/vm-1086"
 
 # assumes following vRO Workflow https://github.com/kclinden/vro-vsphere-tagging as an example
 $body = @"
@@ -33,7 +33,7 @@ $body = @"
                     "id": "$($vroVmId)"}
                 },
             "type": "VC:VirtualMachine",
-            "name": "vm",
+            "name": "$vm",
             "scope": "local"
         },
         {
