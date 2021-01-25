@@ -23,16 +23,16 @@ $FullFormattedMessage = $json.data.FullFormattedMessage
 $FullFormattedMessage.replace([Environment]::NewLine," ")
 #write-host "FullFormattedMessage NewLine="$FullFormattedMessage
 $pos = $FullFormattedMessage.IndexOf($separator)
-$leftPart = $FullFormattedMessage.Substring(0, $pos)
+#$leftPart = $FullFormattedMessage.Substring(0, $pos)
 $rightPart = $FullFormattedMessage.Substring($pos+1)
 #write-host "FullFormattedMessage leftPart="$leftPart
 #write-host "FullFormattedMessage rightPart="$rightPart
 $pos = $rightPart.replace("bject","")
-$FullFormattedMessage = $pos.replace([Environment]::NewLine," ")
+$FormattedMessage = $pos.replace([Environment]::NewLine," ")
 #write-host "FullFormattedMessage Split="$FullFormattedMessage
-$FullFormattedMessage = $FullFormattedMessage.trim()
+$FormattedMessage = $FormattedMessage.trim()
 #write-host "FullFormattedMessage Complete="$FullFormattedMessage
-$vm = $FullFormattedMessage
+$vm = $FormattedMessage
 
 # Test for existince of content in $vm variable and exit script early if test results false
 if($vm -eq "") {
