@@ -22,9 +22,9 @@ $FullFormattedMessage = $json.data.FullFormattedMessage
 write-host "FullFormattedMessage RAW="$FullFormattedMessage
 
 #$FullFormattedMessage = $FullFormattedMessage.split([Environment]::NewLine)
-$FullFormattedMessage = [string]::join("",($FullFormattedMessage.Split("`n")))
-write-host "FullFormattedMessage NewLine="$FullFormattedMessage
 
+$FullFormattedMessage.replace("`n"," ")
+write-host "FullFormattedMessage NewLine="$FullFormattedMessage
 
 $pos = $FullFormattedMessage.IndexOf($separator)
 $leftPart = $FullFormattedMessage.Substring(0, $pos)
@@ -35,6 +35,9 @@ write-host "FullFormattedMessage rightPart="$rightPart
 
 $FullFormattedMessage = $FullFormattedMessage.split($separator,$option)
 write-host "FullFormattedMessage Split="$FullFormattedMessage
+
+$FullFormattedMessage = [string]::join($FullFormattedMessage)
+write-host "FullFormattedMessage Joined="$FullFormattedMessage
 
 $i=0
 foreach($message in $FullFormattedMessage)
