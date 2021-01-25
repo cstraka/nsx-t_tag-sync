@@ -19,9 +19,11 @@ $separator = "object"
 $FullFormattedMessage = $json.data.FullFormattedMessage.split([Environment]::NewLine)
 $FullFormattedMessage = $FullFormattedMessage.split($separator)
 write-host "FullFormattedMessage="$FullFormattedMessage
+$FullFormattedMessage = $FullFormattedMessage[$FullFormattedMessage.count-1]
+write-host "FullFormattedMessage split="$FullFormattedMessage
 $FullFormattedMessage = $FullFormattedMessage.trim()
 write-host "FullFormattedMessage Trimmed="$FullFormattedMessage
-#$vm = $FullFormattedMessage[$FullFormattedMessage.count-1]
+
 $vm = $FullFormattedMessage.trim()
 
 # Test for existince of content in $vm variable and exit script early if test results false
