@@ -21,6 +21,13 @@ $option = [System.StringSplitOptions]::RemoveEmptyEntries
 $FullFormattedMessage = $json.data.FullFormattedMessage
 write-host "FullFormattedMessage RAW="$FullFormattedMessage
 
+$pos = $FullFormattedMessage.IndexOf($separator)
+$leftPart = $FullFormattedMessage.Substring(0, $pos)
+$rightPart = $FullFormattedMessage.Substring($pos+1)
+write-host "FullFormattedMessage leftPart="$leftPart
+write-host "FullFormattedMessage rightPart="$rightPart
+
+
 $FullFormattedMessage = $FullFormattedMessage.split([Environment]::NewLine)
 write-host "FullFormattedMessage NewLine="$FullFormattedMessage
 
