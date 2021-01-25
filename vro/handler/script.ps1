@@ -32,8 +32,9 @@ $rightPart = $FullFormattedMessage.Substring($pos+1)
 write-host "FullFormattedMessage leftPart="$leftPart
 write-host "FullFormattedMessage rightPart="$rightPart
 
+$pos = $rightPart.replace("bject","")
+$FullFormattedMessage = $pos.replace([Environment]::NewLine," ")
 
-$FullFormattedMessage = $rightPart.split($separator)
 write-host "FullFormattedMessage Split="$FullFormattedMessage
 
 $FullFormattedMessage = [string]::join($FullFormattedMessage)
