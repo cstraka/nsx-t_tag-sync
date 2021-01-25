@@ -11,15 +11,14 @@ if($env:function_debug -eq "true") {
 
 # Set vCneter server name to a variable from event message text
 $vcenter = ($json.source -replace "https://","" -replace "/sdk","");
-$keyNumber = $json.$key
-$fullFormattedMessage = $json.data.FullFormattedMessage
+$keyNumber = $json.$keyNumber
 
 # Pull VM name from event message text and set it to variable
-#$separator = "object"," "
-#$option = [System.StringSplitOptions]::RemoveEmptyEntries
-#$FullFormattedMessage = $json.data.FullFormattedMessage.split($separator,$option)
-#$FullFormattedMessage = $FullFormattedMessage.split([Environment]::NewLine)
-#$vm = $FullFormattedMessage[$FullFormattedMessage.count-1]
+$separator = "object"," "
+$option = [System.StringSplitOptions]::RemoveEmptyEntries
+$FullFormattedMessage = $json.data.FullFormattedMessage.split($separator,$option)
+$FullFormattedMessage = $FullFormattedMessage.split([Environment]::NewLine)
+$vm = $FullFormattedMessage[$FullFormattedMessage.count-1]
 
 # Test for existince of content in $vm variable and exit script early if test results false
 if($vmMoRef -eq "" -or $vm -eq "") {
@@ -35,21 +34,21 @@ $vroBody = @"
     "parameters": [
         {
             "type": "string",
-            "name": "FullFormattedMessage",
+            "name": "virtualMachineName",
             "scope": "local",
             "value": {
                 "string": {
-                    "value": "$fullFormattedMessage"
+                    "value": "$vm"
                 }
             }
         },
         {
-            "type": "string",
+            "type": "int32",
             "name": "keyNumber",
             "scope": "local",
             "value": {
-                "string": {
-                    "value": "$keyNumber"
+                "number": {
+                    "value": $keyNumber
                 }
             }
         },
