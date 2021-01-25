@@ -9,7 +9,7 @@ if($env:function_debug -eq "true") {
     Write-Host "DEBUG: json=`"$($json | Format-List | Out-String)`""
 }
 
-# Set vCneter server name to a variable from event message text
+# Set vCenter server name to a variable from event message text
 $vcenter = ($json.source -replace "https://","" -replace "/sdk","");
 $keyNumber = ""
 $keyNumber = $json.data.Key
@@ -25,12 +25,16 @@ write-host "FullFormattedMessage NewLine="$FullFormattedMessage
 $FullFormattedMessage = $FullFormattedMessage.split($separator)
 write-host "FullFormattedMessage Split="$FullFormattedMessage
 
-$FullFormattedMessage = $FullFormattedMessage[$FullFormattedMessage.count-1]
+$i=0
 foreach($message in $FullFormattedMessage)
 {
-    write-host "FullFormattedMessage Array Element="$message
+    $i++
+    write-host "FullFormattedMessage Array Element[$i]="$message
 }
 write-host "FullFormattedMessage Array="$FullFormattedMessage
+
+$FullFormattedMessage = $FullFormattedMessage[$FullFormattedMessage.count-1]
+
 
 $FullFormattedMessage = $FullFormattedMessage.trim()
 write-host "FullFormattedMessage Trimmed="$FullFormattedMessage
