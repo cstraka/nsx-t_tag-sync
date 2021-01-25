@@ -33,7 +33,7 @@ write-host "FullFormattedMessage leftPart="$leftPart
 write-host "FullFormattedMessage rightPart="$rightPart
 
 
-$FullFormattedMessage = $FullFormattedMessage.split($separator,$option)
+$FullFormattedMessage = $rightPart.split($separator)
 write-host "FullFormattedMessage Split="$FullFormattedMessage
 
 $FullFormattedMessage = [string]::join($FullFormattedMessage)
