@@ -16,13 +16,15 @@ $keyNumber = $json.data.Key
 
 # Pull VM name from event message text and set it to variable
 $separator = "object"
+$option = [System.StringSplitOptions]::RemoveEmptyEntries
+
 $FullFormattedMessage = $json.data.FullFormattedMessage
 write-host "FullFormattedMessage RAW="$FullFormattedMessage
 
 $FullFormattedMessage = $FullFormattedMessage.split([Environment]::NewLine)
 write-host "FullFormattedMessage NewLine="$FullFormattedMessage
 
-$FullFormattedMessage = $FullFormattedMessage.split($separator)
+$FullFormattedMessage = $FullFormattedMessage.split($separator,$option)
 write-host "FullFormattedMessage Split="$FullFormattedMessage
 
 $i=0
