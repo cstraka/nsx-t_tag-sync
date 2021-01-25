@@ -14,11 +14,13 @@ $vcenter = ($json.source -replace "https://","" -replace "/sdk","");
 $keyNumber = ""
 $keyNumber = $json.data.Key
 
-# Pull VM name from event message text and set it to variable.  Lots of work to accomodate spaces in a vm name
+# Pull VM name from event message text and set it to variable.  
+# Lots of work to accomodate spaces in a vm name. 
+# Will break if message format from vSphere is changed in the future.
 $separator = "object"
 $FullFormattedMessage = $json.data.FullFormattedMessage
 #write-host "FullFormattedMessage RAW="$FullFormattedMessage
-$FullFormattedMessage.replace("`n"," ")
+$FullFormattedMessage.replace([Environment]::NewLine," ")
 #write-host "FullFormattedMessage NewLine="$FullFormattedMessage
 $pos = $FullFormattedMessage.IndexOf($separator)
 $leftPart = $FullFormattedMessage.Substring(0, $pos)
@@ -33,7 +35,7 @@ $FullFormattedMessage = $FullFormattedMessage.trim()
 $vm = $FullFormattedMessage
 
 # Test for existince of content in $vm variable and exit script early if test results false
-if($vmMoRef -eq "" -or $vm -eq "") {
+if($vm -eq "") {
     Write-Host "Unable to retrieve VM Object from Event payload, please ensure Event contains VM result"
     exit
 }
@@ -95,7 +97,7 @@ $vroUrl = "https://$($SECRETS_CONFIG.VRO_SERVER):443/vco/api/workflows/$($SECRET
 
 #writing variables to console if 'function_debug' is 'true' in stack.yml
 if($env:function_debug -eq "true") {
-    Write-Host "DEBUG: vRoVmID=$vroVmId"
+    Write-Host "DEBUG: VM=$vm"
     Write-Host "DEBUG: vRoURL=`"$($vroUrl | Format-List | Out-String)`""
     Write-Host "DEBUG: headers=`"$($headers | Format-List | Out-String)`""
     Write-Host "DEBUG: body=$vroBody"
