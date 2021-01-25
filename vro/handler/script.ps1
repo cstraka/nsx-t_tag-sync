@@ -14,32 +14,22 @@ $vcenter = ($json.source -replace "https://","" -replace "/sdk","");
 $keyNumber = ""
 $keyNumber = $json.data.Key
 
-# Pull VM name from event message text and set it to variable
+# Pull VM name from event message text and set it to variable.  Lots of work to accomodate spaces in a vm name
 $separator = "object"
-$option = [System.StringSplitOptions]::RemoveEmptyEntries
-
 $FullFormattedMessage = $json.data.FullFormattedMessage
-write-host "FullFormattedMessage RAW="$FullFormattedMessage
-
-#$FullFormattedMessage = $FullFormattedMessage.split([Environment]::NewLine)
-
+#write-host "FullFormattedMessage RAW="$FullFormattedMessage
 $FullFormattedMessage.replace("`n"," ")
-write-host "FullFormattedMessage NewLine="$FullFormattedMessage
-
+#write-host "FullFormattedMessage NewLine="$FullFormattedMessage
 $pos = $FullFormattedMessage.IndexOf($separator)
 $leftPart = $FullFormattedMessage.Substring(0, $pos)
 $rightPart = $FullFormattedMessage.Substring($pos+1)
-write-host "FullFormattedMessage leftPart="$leftPart
-write-host "FullFormattedMessage rightPart="$rightPart
-
+#write-host "FullFormattedMessage leftPart="$leftPart
+#write-host "FullFormattedMessage rightPart="$rightPart
 $pos = $rightPart.replace("bject","")
 $FullFormattedMessage = $pos.replace([Environment]::NewLine," ")
-
-write-host "FullFormattedMessage Split="$FullFormattedMessage
-
+#write-host "FullFormattedMessage Split="$FullFormattedMessage
 $FullFormattedMessage = $FullFormattedMessage.trim()
-write-host "FullFormattedMessage Complete="$FullFormattedMessage
-
+#write-host "FullFormattedMessage Complete="$FullFormattedMessage
 $vm = $FullFormattedMessage
 
 # Test for existince of content in $vm variable and exit script early if test results false
