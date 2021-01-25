@@ -22,7 +22,7 @@ SHELL [ "pwsh", "-command" ]
 ENV fprocess="xargs pwsh ./function/script.ps1"
 COPY function function
 
-EXPOSE 8080
+EXPOSE 8081
 
 HEALTHCHECK --interval=3s CMD [ -e /tmp/.lock ] || exit 1
 CMD [ "fwatchdog" ]

@@ -44,11 +44,11 @@ $vroBody = @"
             }
         },
         {
-            "type": "number",
+            "type": "string",
             "name": "keyNumber",
             "scope": "local",
             "value": {
-                "number": {
+                "string": {
                     "value": "$keyNumber"
                 }
             }
