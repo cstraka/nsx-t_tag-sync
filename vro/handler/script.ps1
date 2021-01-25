@@ -37,24 +37,10 @@ $FullFormattedMessage = $pos.replace([Environment]::NewLine," ")
 
 write-host "FullFormattedMessage Split="$FullFormattedMessage
 
-$FullFormattedMessage = [string]::join($FullFormattedMessage)
-write-host "FullFormattedMessage Joined="$FullFormattedMessage
-
-$i=0
-foreach($message in $FullFormattedMessage)
-{
-    $i++
-    write-host "FullFormattedMessage Array Element[$i]="$message
-}
-write-host "FullFormattedMessage Array="$FullFormattedMessage
-
-$FullFormattedMessage = $FullFormattedMessage[$FullFormattedMessage.count-1]
-
-
 $FullFormattedMessage = $FullFormattedMessage.trim()
-write-host "FullFormattedMessage Trimmed="$FullFormattedMessage
+write-host "FullFormattedMessage Complete="$FullFormattedMessage
 
-$vm = $FullFormattedMessage.trim()
+$vm = $FullFormattedMessage
 
 # Test for existince of content in $vm variable and exit script early if test results false
 if($vmMoRef -eq "" -or $vm -eq "") {
