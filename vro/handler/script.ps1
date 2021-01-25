@@ -11,7 +11,8 @@ if($env:function_debug -eq "true") {
 
 # Set vCneter server name to a variable from event message text
 $vcenter = ($json.source -replace "https://","" -replace "/sdk","");
-$keyNumber = $json.$keyNumber
+$keyNumber = ""
+$keyNumber = $json.Key
 
 # Pull VM name from event message text and set it to variable
 $separator = "object"," "
@@ -43,12 +44,12 @@ $vroBody = @"
             }
         },
         {
-            "type": "int32",
+            "type": "string",
             "name": "keyNumber",
             "scope": "local",
             "value": {
-                "number": {
-                    "value": $keyNumber
+                "string": {
+                    "value": "$keyNumber"
                 }
             }
         },
