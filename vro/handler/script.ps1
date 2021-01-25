@@ -18,12 +18,20 @@ $keyNumber = $json.data.Key
 $separator = "object"
 $FullFormattedMessage = $json.data.FullFormattedMessage
 write-host "FullFormattedMessage RAW="$FullFormattedMessage
+
 $FullFormattedMessage = $FullFormattedMessage.split([Environment]::NewLine)
 write-host "FullFormattedMessage NewLine="$FullFormattedMessage
+
 $FullFormattedMessage = $FullFormattedMessage.split($separator)
-write-host "FullFormattedMessage="$FullFormattedMessage
+write-host "FullFormattedMessage Split="$FullFormattedMessage
+
 $FullFormattedMessage = $FullFormattedMessage[$FullFormattedMessage.count-1]
-write-host "FullFormattedMessage split="$FullFormattedMessage
+foreach($message in $FullFormattedMessage)
+{
+    write-host "FullFormattedMessage Array Element="$message
+}
+write-host "FullFormattedMessage Array="$FullFormattedMessage
+
 $FullFormattedMessage = $FullFormattedMessage.trim()
 write-host "FullFormattedMessage Trimmed="$FullFormattedMessage
 
