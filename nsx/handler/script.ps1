@@ -13,8 +13,7 @@ Set-PowerCLIConfiguration -InvalidCertificateAction Ignore  -DisplayDeprecationW
 
 # Process payload sent from vCenter Server Event
 $json = $args | ConvertFrom-Json
-Write-Host "arg="$args
-Write-Host "json="$json
+
 if($env:function_debug -eq "true") {
     Write-Host "DEBUG: json=`"$($json | Format-List | Out-String)`""
 }
