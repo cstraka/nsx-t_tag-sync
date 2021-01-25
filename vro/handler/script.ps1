@@ -12,14 +12,14 @@ if($env:function_debug -eq "true") {
 # Set vCneter server name to a variable from event message text
 $vcenter = ($json.source -replace "https://","" -replace "/sdk","");
 $key = $json.$key
-$createdTime = $json.CreatedTime
+$fullFormattedMessage = $json.data.FullFormattedMessage
 
 # Pull VM name from event message text and set it to variable
-$separator = "object"," "
-$option = [System.StringSplitOptions]::RemoveEmptyEntries
-$FullFormattedMessage = $json.data.FullFormattedMessage.split($separator,$option)
-$FullFormattedMessage = $FullFormattedMessage.split([Environment]::NewLine)
-$vm = $FullFormattedMessage[$FullFormattedMessage.count-1]
+#$separator = "object"," "
+#$option = [System.StringSplitOptions]::RemoveEmptyEntries
+#$FullFormattedMessage = $json.data.FullFormattedMessage.split($separator,$option)
+#$FullFormattedMessage = $FullFormattedMessage.split([Environment]::NewLine)
+#$vm = $FullFormattedMessage[$FullFormattedMessage.count-1]
 
 # Test for existince of content in $vm variable and exit script early if test results false
 if($vmMoRef -eq "" -or $vm -eq "") {
@@ -35,31 +35,21 @@ $vroBody = @"
     "parameters": [
         {
             "type": "string",
-            "name": "virtualMachineName",
+            "name": "FullFormattedMessage",
             "scope": "local",
             "value": {
                 "string": {
-                    "value": "$json"
+                    "value": "$fullFormattedMessage"
                 }
             }
         },
         {
-            "type": "string",
+            "type": "number",
             "name": "Key",
             "scope": "local",
             "value": {
-                "string": {
+                "number": {
                     "value": "$key"
-                }
-            }
-        },
-        {
-            "type": "string",
-            "name": "createdTime",
-            "scope": "local",
-            "value": {
-                "string": {
-                    "value": "$createdTime"
                 }
             }
         },
