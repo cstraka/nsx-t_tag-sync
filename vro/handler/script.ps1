@@ -1,3 +1,8 @@
+# NOTES:
+# Machine names in a vCenter isntance must be unique: Scripts have no way, based on limited specificiity of vSphere event message, to discern correct machine other than by name.  Intention is to fix this as event messagin evolves.
+#
+#
+#
 
 # Process function Secrets passed in
 $SECRETS_FILE = "/var/openfaas/secrets/vro-secrets"
@@ -11,8 +16,6 @@ if($env:function_debug -eq "true") {
 
 # Set vCenter server name to a variable from event message text
 $vcenter = ($json.source -replace "https://","" -replace "/sdk","");
-$keyNumber = ""
-$keyNumber = $json.data.Key
 
 # Pull VM name from event message text and set it to variable.  
 # Lots of work to accomodate spaces in a vm name. 
@@ -53,16 +56,6 @@ $vroBody = @"
             "value": {
                 "string": {
                     "value": "$vm"
-                }
-            }
-        },
-        {
-            "type": "string",
-            "name": "keyNumber",
-            "scope": "local",
-            "value": {
-                "string": {
-                    "value": "$keyNumber"
                 }
             }
         },
