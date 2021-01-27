@@ -21,11 +21,25 @@ if($env:function_debug -eq "true") {
 # Process payload sent from vCenter Server Event
 $vcenter = ($json.source -replace "https://","" -replace "/sdk","")
 
-$separator = "object"," "
-$option = [System.StringSplitOptions]::RemoveEmptyEntries
-$FullFormattedMessage = $json.data.FullFormattedMessage.split($separator,$option)
-$FullFormattedMessage = $FullFormattedMessage.split([Environment]::NewLine)
-$vm = $FullFormattedMessage[$FullFormattedMessage.count-1]
+# Pull VM name from event message text and set it to variable.  
+# Lots of work to accomodate spaces in a vm name. 
+# Will break if message format from vSphere is changed in the future.
+$separator = "object"
+$FullFormattedMessage = $json.data.FullFormattedMessage
+#write-host "FullFormattedMessage RAW="$FullFormattedMessage
+$FullFormattedMessage.replace([Environment]::NewLine," ")
+#write-host "FullFormattedMessage NewLine="$FullFormattedMessage
+$pos = $FullFormattedMessage.IndexOf($separator)
+#$leftPart = $FullFormattedMessage.Substring(0, $pos)
+$rightPart = $FullFormattedMessage.Substring($pos+1)
+#write-host "FullFormattedMessage leftPart="$leftPart
+#write-host "FullFormattedMessage rightPart="$rightPart
+$pos = $rightPart.replace("bject","")
+$FormattedMessage = $pos.replace([Environment]::NewLine," ")
+#write-host "FullFormattedMessage Split="$FullFormattedMessage
+$FormattedMessage = $FormattedMessage.trim()
+#write-host "FullFormattedMessage Complete="$FullFormattedMessage
+$vm = $FormattedMessage
 
 if($vmMoRef -eq "" -or $vm -eq "") {
     Write-Host "Unable to retrieve VM Object from Event payload, please ensure Event contains VM result"
