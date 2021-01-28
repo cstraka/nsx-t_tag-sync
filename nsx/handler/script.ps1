@@ -61,11 +61,11 @@ $nsxList = New-Object System.Collections.ArrayList
 
 #Read VM tags from vCenter
 
-$vm = Get-VM -name $vm | Select-Object Name,PersistentID
+$vm = Get-VM -name $vm | Select-Object Name,PersistentId
 
 # until uniquely identifiable VM data is provided in a vSphere event this is the only option to maintain a safe NSX-t operating environment
-if($vm.Name || $vm.PersistentID -is [array]) {
-    Write-host "Machine " $vm.name[0] " is not unique in the vSphere instance.  Update NSX manually" 
+if($vm.PersistentID -is [array]) {
+    Write-host "Machine" $vm.name[0] "is not unique in the vSphere instance.  Update NSX manually" 
     exit
 }
 
