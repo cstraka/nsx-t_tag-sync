@@ -67,6 +67,10 @@ $vm = Get-VM -name $vm | Select-Object Name,PersistentId
 if($vm.PersistentID -is [array]) {
     Write-host "Machine" $vm.name[0] "is not unique in the vSphere instance.  Update NSX manually" 
     exit
+} else {
+    if($env:function_debug -eq "true") {
+        write-host $vm.PersistentID
+    }
 }
 
 $tags = Get-VM -name $vm.name | Get-TagAssignment
@@ -76,7 +80,6 @@ foreach ($tag in $tags)
     $tagString = $tag.tag.ToString()
     $tagArray = $tagString.split('/')
     $nsxList.add(@{"tag"=$tagArray[1];"scope"=$tagArray[0]})
-    write-host $tagArray
     if($env:function_debug -eq "true") {
         write-host $tagString
     }
