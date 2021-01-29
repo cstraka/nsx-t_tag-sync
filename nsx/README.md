@@ -2,7 +2,6 @@
 Mad props to https://www.virtuallyghetto.com/2020/03/integrating-vcenter-event-broker-appliance-veba-with-vrealize-orchestrator.html for 99.9% of this and VEBA!
 
 ## Description
-
 This function user powercli to get VM sepecifc tagging data from vSphere and use it to synchronize NSX-T Tags.
 
 ## Prerequisites
