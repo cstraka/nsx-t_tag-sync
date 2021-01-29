@@ -1,8 +1,7 @@
 # vRealize Orchestrator Function 
-(Mad props to https://www.virtuallyghetto.com/2020/03/integrating-vcenter-event-broker-appliance-veba-with-vrealize-orchestrator.html for 99.9% of this and VEBA!)
+Mad props to https://www.virtuallyghetto.com/2020/03/integrating-vcenter-event-broker-appliance-veba-with-vrealize-orchestrator.html for 99.9% of this and VEBA!
 
 ## Description
-
 This function demonstrates using PowerShell to trigger a vRealize Orchestrator workflow using vRO REST API
 
 ## Prerequisites
