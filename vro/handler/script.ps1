@@ -1,8 +1,33 @@
-# NOTES:
-# Machine names in a vCenter isntance must be unique: Scripts have no way, based on limited specificiity of vSphere event message, to discern correct machine other than by name.  Intention is to fix this as event messagin evolves.
+# Author: Craig Straka (craig.straka@it-partners.com)
+# Version .1 (Beta)
+# Master stored at: https://github.com/cstraka/NSX-T_Tag-Sync (/vro)
+# Intention:
+#   Synchronize vSphere tags with NSX-T tags unidiretionally (vSphere is the master)
+#   Script is used as a OpenFaas VMware Event Broker powercli function to intercept and parse vSphere events from event types:
+#       - com.vmware.cis.tagging.attach
+#       - com.vmware.cis.tagging.detach
+#   Script sends parsed results to a VRO instance for further data inut validation and to discover vSphere Tags and apply them to NSX.
+# 
+# Tested with:
+#   VEBA .5 (OpenFaaS)
+#   vSphere 7.0.1
+#   NSX-T 3.0.2
+#   VMware vRealize Orchestrator 8.2 - Standalone (no VRA)
 #
+# Notes:
+#   Machine names in a vCenter instance must be unique: 
+#       Script has no way, based on limited specificity of vSphere event message of the types above, to discern correct VM other than by name.
+#           Lots of work to accomodate spaces, new lines, and other anomalies in the event data to get the VM name.
+#               accomodation efforts to handle naming are ongoing as errata is reported.
+#           
+#       Script does NOT detect duplicate named VM's, VRO workflow does.  
+#           Overridding intention is to not use 'Get-VM' cmdlet, and required modules, in this script which would be required to detect dupes.
 #
-#
+# Planned enhancements (script today is minimally viable):
+#   Updates based on vSphere event changes.
+#   Send in NSX FQDN so vRO can dynamically determine the correct NSX-T Local Manager
+#       Possibly part of the Secrets file, but further vSphere and NSX integration may alter the enhancement direction.
+#   Hopefully, better vSphere and NSX-T integration will render this script obsolete.
 
 # Process function Secrets passed in
 $SECRETS_FILE = "/var/openfaas/secrets/vro-secrets"
@@ -18,23 +43,31 @@ if($env:function_debug -eq "true") {
 $vcenter = ($json.source -replace "https://","" -replace "/sdk","");
 
 # Pull VM name from event message text and set it to variable.  
-# Lots of work to accomodate spaces in a vm name. 
-# Will break if message format from vSphere is changed in the future.
 $separator = "object"
 $FullFormattedMessage = $json.data.FullFormattedMessage
-#write-host "FullFormattedMessage RAW="$FullFormattedMessage
+if($env:function_debug -eq "true") {
+    write-host "FullFormattedMessage RAW="$FullFormattedMessage
+}
 $FullFormattedMessage.replace([Environment]::NewLine," ")
-#write-host "FullFormattedMessage NewLine="$FullFormattedMessage
+if($env:function_debug -eq "true") {
+    write-host "FullFormattedMessage NewLine="$FullFormattedMessage
+}
 $pos = $FullFormattedMessage.IndexOf($separator)
-#$leftPart = $FullFormattedMessage.Substring(0, $pos)
 $rightPart = $FullFormattedMessage.Substring($pos+1)
-#write-host "FullFormattedMessage leftPart="$leftPart
-#write-host "FullFormattedMessage rightPart="$rightPart
+if($env:function_debug -eq "true") {
+    $leftPart = $FullFormattedMessage.Substring(0, $pos)
+    write-host "FullFormattedMessage leftPart="$leftPart
+    write-host "FullFormattedMessage rightPart="$rightPart
+}
 $pos = $rightPart.replace("bject","")
 $FormattedMessage = $pos.replace([Environment]::NewLine," ")
-#write-host "FullFormattedMessage Split="$FullFormattedMessage
+if($env:function_debug -eq "true") {
+    write-host "FullFormattedMessage Split="$FullFormattedMessage
+}
 $FormattedMessage = $FormattedMessage.trim()
-#write-host "FullFormattedMessage Complete="$FullFormattedMessage
+if($env:function_debug -eq "true") {
+    write-host "FullFormattedMessage Complete="$FullFormattedMessage
+}
 $vm = $FormattedMessage
 
 # Test for existince of content in $vm variable and exit script early if test results false
@@ -44,7 +77,7 @@ if($vm -eq "") {
 }
 
 # This syntax is very specific.  
-# The 'name' element (e.g. "name": "virtualMachineName" & "name": "vcenterName") MUST be a named input to the VRO workflow with a matching type (e.g. 'string')
+# The 'name' element (e.g. "name": "virtualMachineName" & "name": "vcenterName") MUST be a same named input to the VRO workflow with a matching type (e.g. 'string')
 # CASE SENSITIVE.
 $vroBody = @"
 {
@@ -97,8 +130,12 @@ if($env:function_debug -eq "true") {
 }
 
 #calling VRO
+$response = ""
 if($env:skip_vro_cert_check -eq "true") {
-    Invoke-Webrequest -Uri $vroUrl -Method POST -Body $vroBody -Headers $headers -SkipHeaderValidation -SkipCertificateCheck
+    $response = Invoke-Webrequest -Uri $vroUrl -Method POST -Body $vroBody -Headers $headers -SkipHeaderValidation -SkipCertificateCheck
 } else {
-    Invoke-Webrequest -Uri $vroUrl -Method POST -Body $vroBody -Headers $headers -SkipHeaderValidation 
+    $response = Invoke-Webrequest -Uri $vroUrl -Method POST -Body $vroBody -Headers $headers -SkipHeaderValidation 
+}
+if($env:function_debug -eq "true") {
+    Write-Host "DEBUG: Invoke-WebRequest=$response"
 }

@@ -1,3 +1,30 @@
+# Author: Craig Straka (craig.straka@it-partners.com)
+# Version .1 (Beta)
+# Master stored at: https://github.com/cstraka/NSX-T_Tag-Sync (/nsx)
+# Intention:
+#   Synchronize vSphere tags with NSX-T tags unidiretionally (vSphere is the master)
+#   Script is used as a OpenFaas VMware Event Broker powercli function to intercept and parse vSphere events from event types:
+#       - com.vmware.cis.tagging.attach
+#       - com.vmware.cis.tagging.detach
+#   Script gets vSphere Tags from vSphere, transforms the data, and updates the Virtual machine object in NSX-T.
+# 
+# Tested with:
+#   VEBA .5 (OpenFaaS)
+#   vSphere 7.0.1
+#   NSX-T 3.0.2
+#
+# Notes:
+#   Machine names in a vCenter instance must be unique: 
+#       Script has no way, based on limited specificity of vSphere event message of the types above, to discern correct machine other than by name.
+#           Lots of issues here as the name may not be unique in the cluster
+#           Intention is to fix this as vSphere event messages evolve.
+#       Event data has a number of odd charachters, such as new lines, that must be accomodated to get the machine name.  
+#           accomodation efforts to handle naming are ongoing as errata is reported.
+#
+# Planned enhancements (script today is minimally viable):
+#   Updates based on vSphere event changes
+#   Hopefully, better vSphere and NSX-T integration will render this script obsolete.
+
 # Process function Secrets passed in
 $SECRETS_FILE = "/var/openfaas/secrets/nsx-secrets"
 $SECRETS_CONFIG = (Get-Content -Raw -Path $SECRETS_FILE | ConvertFrom-Json)
@@ -22,23 +49,31 @@ if($env:function_debug -eq "true") {
 $vcenter = ($json.source -replace "https://","" -replace "/sdk","")
 
 # Pull VM name from event message text and set it to variable.  
-# Lots of work to accomodate spaces in a vm name. 
-# Will break if message format from vSphere is changed in the future.
 $separator = "object"
 $FullFormattedMessage = $json.data.FullFormattedMessage
-#write-host "FullFormattedMessage RAW="$FullFormattedMessage
+if($env:function_debug -eq "true") {
+    write-host "FullFormattedMessage RAW="$FullFormattedMessage
+}
 $FullFormattedMessage.replace([Environment]::NewLine," ")
-#write-host "FullFormattedMessage NewLine="$FullFormattedMessage
+if($env:function_debug -eq "true") {
+    write-host "FullFormattedMessage minus NewLine="$FullFormattedMessage
+}
 $pos = $FullFormattedMessage.IndexOf($separator)
-#$leftPart = $FullFormattedMessage.Substring(0, $pos)
 $rightPart = $FullFormattedMessage.Substring($pos+1)
-#write-host "FullFormattedMessage leftPart="$leftPart
-#write-host "FullFormattedMessage rightPart="$rightPart
+if($env:function_debug -eq "true") {
+    $leftPart = $FullFormattedMessage.Substring(0, $pos)
+    write-host "FullFormattedMessage leftPart="$leftPart
+    write-host "FullFormattedMessage rightPart="$rightPart
+}
 $pos = $rightPart.replace("bject","")
 $FormattedMessage = $pos.replace([Environment]::NewLine," ")
-#write-host "FullFormattedMessage Split="$FullFormattedMessage
+if($env:function_debug -eq "true") {
+    write-host "FullFormattedMessage Split="$FullFormattedMessage
+}
 $FormattedMessage = $FormattedMessage.trim()
-#write-host "FullFormattedMessage Complete="$FullFormattedMessage
+if($env:function_debug -eq "true") {
+    write-host "FullFormattedMessage Complete="$FullFormattedMessage
+}
 $vm = $FormattedMessage
 
 if($vmMoRef -eq "" -or $vm -eq "") {
@@ -55,17 +90,12 @@ $Credentials = New-Object System.Management.Automation.PSCredential $userName,$p
 Write-Host "Connecting to VI Server..."
 Connect-VIServer -Server $vcenter -Protocol https -Credential $credentials
 
-# Create the JSON Tagging structure for NSX
-$nsxJSON = @{}
-$nsxList = New-Object System.Collections.ArrayList
-
-#Read VM tags from vCenter
-
+# Get VM object from vCenter
 $vm = Get-VM -name $vm | Select-Object Name,PersistentId
 
-# until uniquely identifiable VM data is provided in a vSphere event this is the only option to maintain a safe NSX-t operating environment
+# until uniquely identifiable VM data is provided in a vSphere event this is the only option to maintain a safe NSX-T operating environment
 if($vm.PersistentID -is [array]) {
-    Write-host "Machine" $vm.name[0] "is not unique in the vSphere instance.  Update NSX manually" 
+    Write-host "Machine" $vm.name[0] "is not unique in the vSphere instance.  Update NSX tags manually" 
     exit
 } else {
     if($env:function_debug -eq "true") {
@@ -73,8 +103,10 @@ if($vm.PersistentID -is [array]) {
     }
 }
 
+# Get VM objects tags from vCenter and write them to a JSON object
+# Create the JSON Tagging structure for NSX
+$nsxList = New-Object System.Collections.ArrayList
 $tags = Get-VM -name $vm.name | Get-TagAssignment
-
 foreach ($tag in $tags)
 {
     $tagString = $tag.tag.ToString()
@@ -84,15 +116,15 @@ foreach ($tag in $tags)
         write-host $tagString
     }
 }
-
-Write-Host "Disconnecting from vCenter Server ..."
-Disconnect-VIServer * -Confirm:$false
-
+$nsxJSON = @{}
 $nsxJSON.add("external_id",$vm.PersistentId)
 $nsxJSON.add("tags",$nsxList)
-
-# Write nsxJSON to the NSX REST call Payload
+# Write nsxJSON string to JSON for the NSX REST call payload
 $nsxBody = $nsxJSON | ConvertTo-Json -depth 10
+
+# disconnect from VI server
+Write-Host "Disconnecting from vCenter Server ..."
+Disconnect-VIServer * -Confirm:$false
 
 # Create Basic Auth string for NSX authentication
 $pair = "$($SECRETS_CONFIG.NSX_USERNAME):$($SECRETS_CONFIG.NSX_PASSWORD)"
@@ -109,7 +141,6 @@ $headers = @{
     "Accept="="application/json";
     "Content-Type"="application/json";
 }
-
 if($env:debug_writehost -eq "true") {
     Write-Host "DEBUG: nsxURL=`"$($nsxUrl | Format-List | Out-String)`""
     Write-Host "DEBUG: headers=`"$($headers | Format-List | Out-String)`""
@@ -118,8 +149,12 @@ if($env:debug_writehost -eq "true") {
 }
 
 # POST to NSX
+$response = ""
 if($env:skip_nsx_cert_check = "true") {
-    Invoke-Webrequest -Uri $nsxUrl -Method POST -Headers $headers -SkipHeaderValidation -Body $nsxbody -SkipCertificateCheck
+    $response = Invoke-Webrequest -Uri $nsxUrl -Method POST -Headers $headers -SkipHeaderValidation -Body $nsxbody -SkipCertificateCheck
 } else {
-    Invoke-Webrequest -Uri $nsxUrl -Method POST -Headers $headers -SkipHeaderValidation -Body $nsxbody
+    $response = Invoke-Webrequest -Uri $nsxUrl -Method POST -Headers $headers -SkipHeaderValidation -Body $nsxbody
+}
+if($env:function_debug -eq "true") {
+    Write-Host "DEBUG: Invoke-WebRequest=$response"
 }

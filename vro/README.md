@@ -1,13 +1,16 @@
-# vRealize Orchestrator Function
+# vRealize Orchestrator Function 
+(Mad props to https://www.virtuallyghetto.com/2020/03/integrating-vcenter-event-broker-appliance-veba-with-vrealize-orchestrator.html for 99.9% of this and VEBA!)
 
 ## Description
 
-This function demonstrates using PowerShell to trigger vRealize Orchestrator workflow using vRO REST API
+This function demonstrates using PowerShell to trigger a vRealize Orchestrator workflow using vRO REST API
 
 ## Prerequisites
-
-* You have deployed the example vSphere Tagging vRO Workflow package from https://github.com/kclinden/vro-vsphere-tagging
-* You have retrieved the required vRO Workflow ID (please see this blog post [here](https://www.virtuallyghetto.com/2020/03/using-vro-rest-api-to-execute-a-workflow-with-sdk-objects.html) for more details)
+- vRealize Orchestrator deplyoment
+	- vSphere VASA
+	- NSX-T REST Host
+- You have deployed the 'com.it-partners.com.nsxTagSyn.package' Workflow package from https://github.com/IT-Partners/nsx-t_tag-sync/tree/main/vro
+- VMware Event Broker Appliance (VEBA) fling (https://flings.vmware.com/vmware-event-broker-appliance) Installtion
 
 ## Instruction Consuming Function
 
@@ -24,7 +27,7 @@ Step 2 - Update `stack.yml` and `vro-secrets.json` with your environment informa
 Step 3 - Deploy function to VMware Event Broker Appliance
 
 ```
-VEBA_GATEWAY=https://veba.primp-industries.com
+VEBA_GATEWAY=https://phxlvveba01.itplab.local
 export OPENFAAS_URL=${VEBA_GATEWAY} # this is handy so you don't have to keep specifying OpenFaaS endpoint in command-line
 
 faas-cli login --username admin --password-stdin --tls-no-verify # login with your admin password
@@ -35,7 +38,7 @@ faas-cli deploy -f stack.yml --tls-no-verify
 Step 4 - To remove the function and secret from VMware Event Broker Appliance
 
 ```
-VEBA_GATEWAY=https://veba.primp-industries.com
+VEBA_GATEWAY=https://phxlvveba01.itplab.local
 export OPENFAAS_URL=${VEBA_GATEWAY} # this is handy so you don't have to keep specifying OpenFaaS endpoint in command-line
 
 faas-cli remove -f stack.yml --tls-no-verify
