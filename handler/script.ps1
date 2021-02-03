@@ -48,7 +48,8 @@ $vcenter = ($json.source -replace "https://","" -replace "/sdk","")
 # Pull VM name from event message and set it to variable.  
 $vm = ($json.Arguments | where-object {$_.key -eq "Object"}).Value
 
-if($vmMoRef -eq "" -or $vm -eq "") {
+# Test for existince of content in $vm variable and exit script early if test results false
+if($vm -eq "") {
     Write-Host "Unable to retrieve VM Object from Event payload, please ensure Event contains VM result"
     exit
 }
