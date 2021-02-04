@@ -7,9 +7,9 @@ functions:
     handler: ./handler
     image: cmstraka/veba-powercli-tagging:latest
     environment:
-      write_debug: true
-      read_debug: true
-      function_debug: true
+      write_debug: false
+      read_debug: false
+      function_debug: false
     secrets:
       - nsx-secrets
     annotations:
