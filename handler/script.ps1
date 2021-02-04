@@ -39,8 +39,8 @@ Set-PowerCLIConfiguration -InvalidCertificateAction Ignore  -DisplayDeprecationW
 $json = $args | ConvertFrom-Json
 
 if($env:function_debug -eq "true") {
-    Write-Host "DEBUG: json=`"$($args | Format-List | Out-String)`"" {
-        foreach ($argument in $args.Arguments) {
+    Write-Host "DEBUG: json=`"$($json | Format-List | Out-String)`"" {
+        foreach ($argument in $json.Arguments) {
             Write-Host 'key='$argument.key
             write-host 'value='$argument.Value
         }
