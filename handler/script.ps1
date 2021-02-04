@@ -39,17 +39,17 @@ Set-PowerCLIConfiguration -InvalidCertificateAction Ignore  -DisplayDeprecationW
 $json = $args | ConvertFrom-Json
 
 if($env:function_debug -eq "true") {
-    Write-Host "DEBUG: json=`"$($args | Format-List | Out-String)`""
-    Write-Host "JSON==>"$json
-    Write-Host "Args==>"$args.Arguments | Convertto-Json
-    Write-Host "args data==>"$args.data | ConvertTo-Json
+    Write-Host "DEBUG: json=`"$($json | Format-List | Out-String)`""
+    write-host "`n"
+    Write-Host "DEBUG: args=`"$($args | Format-List | Out-String)`""
+    write-host "`n"
 }
 
 # Process payload sent from vCenter Server Event
 $vcenter = ($json.source -replace "https://","" -replace "/sdk","")
 
 # Pull VM name from event message and set it to variable. 
-$vm = ($json.Arguments | ConvertTo-Json | where-object {$_.key -eq "Object"}).Value
+$vm = ($args.Arguments | where-object {$_.key -eq "Object"}).Value
 
 # Test for existince of content in $vm variable and exit script early if test results false
 if($vm -eq "") {
