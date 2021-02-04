@@ -48,7 +48,7 @@ if($env:function_debug -eq "true") {
 $vcenter = ($json.source -replace "https://","" -replace "/sdk","")
 
 # Pull VM name from event message and set it to variable. 
-$vm = ($args.data.Arguments | where-object {$_.key -eq "Object"}).Value
+$vm = ($args.Arguments | where-object {$_.key -eq "Object"}).Value
 
 # Test for existince of content in $vm variable and exit script early if test results false
 if($vm -eq "") {
