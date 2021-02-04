@@ -27,12 +27,12 @@ $SECRETS_FILE = "/var/openfaas/secrets/nsx-secrets"
 $SECRETS_CONFIG = (Get-Content -Raw -Path $SECRETS_FILE | ConvertFrom-Json)
 
 # Test if PowerCLI VMware.VimAutomation.Core Module is installed, install if not
-if(Get-Module -ListAvailable -Name VMware.VimAutomation.Core) {
-    Write-Host "VMware.VimAutomation.Core Module exists"
-} else {
-    Write-Host "VMware.VimAutomation.CoreModule does not exist, installing"
-    Install-Package -Name VMware.VimAutomation.Core
-}
+#if(Get-Module -ListAvailable -Name VMware.VimAutomation.Core) {
+#    Write-Host "VMware.VimAutomation.Core Module exists"
+#} else {
+#    Write-Host "VMware.VimAutomation.CoreModule does not exist, installing"
+#    Install-Package -Name VMware.VimAutomation.Core
+#}
 Set-PowerCLIConfiguration -InvalidCertificateAction Ignore  -DisplayDeprecationWarnings $false -ParticipateInCeip $false -Confirm:$false | Out-Null
 
 # Process payload sent from vCenter Server Event
