@@ -40,9 +40,6 @@ $json = $args | ConvertFrom-Json
 
 if($env:function_debug -eq "true") {
     Write-Host "DEBUG: json=`"$($json | Format-List | Out-String)`""
-    write-host "`n"
-    Write-Host "DEBUG: args=`"$($args | Format-List | Out-String)`""
-    write-host "`n"
 }
 
 # Process payload sent from vCenter Server Event
