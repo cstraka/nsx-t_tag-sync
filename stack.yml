@@ -5,7 +5,7 @@ functions:
   nsxttagsync:
     lang: powercli
     handler: ./handler
-    image: vmware/powerclicore:latest
+    image: cmstraka/powerclicore:latest
     environment:
       write_debug: true
       read_debug: true
