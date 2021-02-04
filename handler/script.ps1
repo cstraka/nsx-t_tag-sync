@@ -40,7 +40,8 @@ $json = $args | ConvertFrom-Json
 
 if($env:function_debug -eq "true") {
     Write-Host "DEBUG: json=`"$($json | Format-List | Out-String)`"" {
-        foreach ($argument in $json.Arguments) {
+        $arguments = $args.Arguments | ConvertFrom-Json
+        foreach ($argument in $arguments) {
             Write-Host 'key='$argument.key
             write-host 'value='$argument.Value
         }
