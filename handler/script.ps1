@@ -40,12 +40,20 @@ $json = $args | ConvertFrom-Json
 
 if($env:function_debug -eq "true") {
     Write-Host "DEBUG: json=`"$($json | Format-List | Out-String)`""
+    foreach($event in $json) {
+        foreach ($args in $event.Arguments) {
+            foreach ($arg in $args) {
+                Write-Host 'key='$arg.key
+                write-host 'value='$arg.Value
+            }
+        }
+    }
 }
 
 # Process payload sent from vCenter Server Event
 $vcenter = ($json.source -replace "https://","" -replace "/sdk","")
 
-# Pull VM name from event message and set it to variable.  
+# Pull VM name from event message and set it to variable. 
 $vm = ($args.Arguments | where-object {$_.key -eq "Object"}).Value
 
 # Test for existince of content in $vm variable and exit script early if test results false
