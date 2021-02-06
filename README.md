@@ -1,6 +1,5 @@
 # vSphere to NSX Tag Synchronization
 
-### Author: Craig Straka (craig.straka@it-partners.com)
 ### Version: .5 (aligned with VEBA)
 
 ## Description
@@ -16,10 +15,8 @@ Script is deployed as an OpenFaas VMware Event Broker powercli function to inter
 ## Notes:
 - Machine names in a vCenter instance may not be unique.
 - event messages coming from vCenter to VEBA does not contain uniquely identifiable VM details other than name.
-- As such, Script has no way, based on limited specificity of vSphere event message of the types above, to discern correct machine other than by name.
-		- As such, because NSX-T Tags are central to dynamic firewall rules and alterations to the wrong machine will be a security issue, the script exits without making changes and posts a message to the effect.
-- Event data has an number of odd charachters, such as new lines, that must be accomodated to get the machine name.  
-	- accomodation efforts to handle naming are ongoing as errata is reported.
+- As such, Script has no way, based on limited specificity of vSphere event message of the types above, to discern correct VM other than by name.
+- As NSX-T Tags are central to dynamic firewall rules, and alterations to the wrong machine will be a security issue, if duplicate VM names are detected in vCenter the script exits without making changes and posts a message to the effect.
 
 ## Tested with:
 - VEBA .5 (OpenFaaS)
