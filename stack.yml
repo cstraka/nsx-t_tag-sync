@@ -5,7 +5,7 @@ functions:
   nsxttagsync:
     lang: powercli
     handler: ./handler
-    image: cmstraka/veba-powercli-tagging:latest
+    image: cmstraka/veba-powercli-tag-sync-to-nsxt:latest
     environment:
       write_debug: false
       read_debug: false
