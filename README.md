@@ -25,7 +25,7 @@ Script is deployed as an OpenFaas VMware Event Broker powercli function to inter
 
 ## Planned enhancements (script today is minimally viable):
 - Updates based on vSphere event changes
-	- Hopefully, better vSphere and NSX-T integration will render this script obsolete.
+- Hopefully, better vSphere and NSX-T integration will render this script obsolete.
 - Ability to exclude vSphere tag categories if needed
 
 ## Instruction Consuming Function
